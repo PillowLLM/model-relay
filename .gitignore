@@ -1,0 +1,9 @@
+/target
+frontend/node_modules
+/data
+public/uploads
+public/js/*.map
+.env*
+*.log
+.DS_Store
+Thumbs.db

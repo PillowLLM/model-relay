@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Model Relay · AI 模型中转站</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        brand: { DEFAULT: '#4f5df1', dark: '#3a45d6', light: '#edf0ff', light2: '#dfe4ff' },
+        ink: { DEFAULT: '#0b1624', soft: '#55637a', faint: '#9aa5ba' },
+        accent: { green: '#0a9d78', greenL: '#e6f6f1', amber: '#b5721f', amberL: '#fbf1e2', purple: '#6d50d1' },
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+      },
+    }
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="060bfc2b3cd9eb7b1431c3f9c41ff42c.jpg">
+<style>
+  body { font-feature-settings: 'cv02','cv03','cv04','cv11'; }
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(79,93,241,.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,93,241,.06) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+  .glow { background: radial-gradient(circle at center, rgba(79,93,241,.16), transparent 60%); }
+  .gradient-text { background: linear-gradient(100deg, #4f5df1, #8b5cf6); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .card-hover { transition: all .25s ease; }
+  .card-hover:hover { transform: translateY(-4px); box-shadow: 0 24px 60px rgba(16,24,40,.12); }
+  .tier-fill { transition: width .6s ease; }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  .float-anim { animation: float 4s ease-in-out infinite; }
+  .float-anim-delay { animation: float 4s ease-in-out infinite; animation-delay: 1.5s; }
+</style>
+</head>
+<body class="bg-gray-50 dark:bg-[#0b1120] text-ink dark:text-gray-100 font-sans antialiased transition-colors">
+
+<!-- ===== SVG Icon Sprite ===== -->
+<svg class="hidden">
+  <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.5 8 8 10 4.5-2 8-5 8-10V6l-8-4z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-receipt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M8 7h8M8 11h8M8 15h5"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 10 5-10 5L2 7l10-5Z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 5-6"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20Z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15.5 7.5 5 5L21 14l-1.5-.5L18 15l-1.5-1.5L15 15l-3-3a5 5 0 1 0-7 7 5 5 0 0 0 7 0"/><circle cx="7.5" cy="15.5" r="1.5"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4M3 5v14a2 2 0 0 0 2 2h16v-5M18 12a2 2 0 0 0 0 4h4v-4Z"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+</svg>
+
+<!-- ===== Nav ===== -->
+<nav class="sticky top-0 z-50 backdrop-blur-xl bg-white/72 dark:bg-[#0b1120]/72 border-b border-gray-200/60 dark:border-gray-800/60">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <div class="flex items-center gap-2.5 cursor-pointer" onclick="scrollTo({top:0})">
+      <img src="060bfc2b3cd9eb7b1431c3f9c41ff42c.jpg" alt="Logo" class="w-9 h-9 rounded-xl object-cover ring-2 ring-brand/20">
+      <div class="font-bold text-lg tracking-tight">Model Relay<span class="text-ink-faint dark:text-gray-500 font-normal text-sm ml-1.5">· 中转站</span></div>
+    </div>
+    <div class="hidden md:flex items-center gap-1 text-sm font-medium text-ink-soft dark:text-gray-400">
+      <a href="#home" class="px-3 py-2 rounded-lg hover:bg-brand-light dark:hover:bg-brand/10 hover:text-brand transition">首页</a>
+      <a href="#models" class="px-3 py-2 rounded-lg hover:bg-brand-light dark:hover:bg-brand/10 hover:text-brand transition">模型大厅</a>
+      <a href="#features" class="px-3 py-2 rounded-lg hover:bg-brand-light dark:hover:bg-brand/10 hover:text-brand transition">特性</a>
+      <a href="#docs" class="px-3 py-2 rounded-lg hover:bg-brand-light dark:hover:bg-brand/10 hover:text-brand transition">接入文档</a>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="toggleTheme()" class="w-9 h-9 rounded-lg flex items-center justify-center text-ink-soft dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition" title="切换主题">
+        <svg class="w-5 h-5 hidden dark:block"><use href="#i-moon"/></svg>
+        <svg class="w-5 h-5 dark:hidden"><use href="#i-sun"/></svg>
+      </button>
+      <a href="#" onclick="openLogin();return false" class="px-4 py-2 rounded-lg bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition shadow-sm shadow-brand/30">登录</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== Hero ===== -->
+<section id="home" class="relative overflow-hidden">
+  <div class="absolute inset-0 grid-bg opacity-50 dark:opacity-20"></div>
+  <div class="absolute top-0 right-0 w-[600px] h-[600px] glow blur-2xl"></div>
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+    <div class="grid lg:grid-cols-[1.1fr_0.9fr] gap-12 items-center">
+      <div>
+        <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-green/10 text-accent-green text-sm font-medium mb-6">
+          <span class="w-2 h-2 rounded-full bg-accent-green animate-pulse"></span>
+          公益拼团 · 已帮 862 位开发者拿低价
+        </span>
+        <h1 class="text-4xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-5">
+          找搭子，拼模型<br>
+          用量越大，<span class="gradient-text">价格越低</span>
+        </h1>
+        <p class="text-lg text-ink-soft dark:text-gray-400 max-w-xl mb-8 leading-relaxed">
+          上游按「日消耗量」给批发价。我们把大家的用量合并进同一个账号，冲到量级门槛，再按成本价分给你——平台不收一分钱差价。
+        </p>
+        <div class="flex flex-wrap gap-3 mb-12">
+          <a href="#models" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand text-white font-semibold hover:bg-brand-dark transition shadow-lg shadow-brand/30">
+            进入模型大厅
+            <svg class="w-4 h-4"><use href="#i-arrow"/></svg>
+          </a>
+          <a href="#features" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white dark:bg-gray-800 text-ink dark:text-gray-200 font-semibold border border-gray-200 dark:border-gray-700 hover:border-brand dark:hover:border-brand transition">
+            看我们怎么不赚差价
+          </a>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-8 border-t border-gray-200 dark:border-gray-800">
+          <div><div class="text-3xl font-extrabold text-ink dark:text-white">8.6<span class="text-base font-bold text-ink-soft ml-0.5">亿</span></div><div class="text-sm text-ink-faint dark:text-gray-500 mt-1">累计 token 用量</div></div>
+          <div><div class="text-3xl font-extrabold text-ink dark:text-white">862</div><div class="text-sm text-ink-faint dark:text-gray-500 mt-1">开发者成员</div></div>
+          <div><div class="text-3xl font-extrabold text-accent-green">¥0</div><div class="text-sm text-ink-faint dark:text-gray-500 mt-1">平台差价</div></div>
+          <div><div class="text-3xl font-extrabold text-ink dark:text-white">12</div><div class="text-sm text-ink-faint dark:text-gray-500 mt-1">在拼模型</div></div>
+        </div>
+      </div>
+      <div class="relative h-[420px] hidden lg:block">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 float-anim">
+          <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-2xl border border-gray-100 dark:border-gray-700 text-center">
+            <img src="060bfc2b3cd9eb7b1431c3f9c41ff42c.jpg" alt="Model Relay" class="w-32 h-32 rounded-2xl object-cover mx-auto mb-4 ring-4 ring-brand/10">
+            <div class="font-bold text-xl text-ink dark:text-white">Model Relay</div>
+            <div class="text-sm text-ink-faint dark:text-gray-500">model-relay</div>
+          </div>
+        </div>
+        <div class="absolute top-8 left-0 float-anim-delay">
+          <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-xl border border-gray-100 dark:border-gray-700 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-brand-light dark:bg-brand/15 flex items-center justify-center text-brand"><svg class="w-5 h-5"><use href="#i-cpu"/></svg></div>
+            <div><div class="font-bold text-sm text-ink dark:text-white">累计 2.6亿</div><div class="text-xs text-ink-faint dark:text-gray-500">模型消耗总量</div></div>
+          </div>
+        </div>
+        <div class="absolute bottom-8 right-0 float-anim">
+          <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-xl border border-gray-100 dark:border-gray-700 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-accent-green/10 flex items-center justify-center text-accent-green"><svg class="w-5 h-5"><use href="#i-chart"/></svg></div>
+            <div><div class="font-bold text-sm text-ink dark:text-white">今日 880万</div><div class="text-xs text-ink-faint dark:text-gray-500">token / 天</div></div>
+          </div>
+        </div>
+        <div class="absolute top-1/2 right-0 float-anim-delay">
+          <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-xl border border-gray-100 dark:border-gray-700 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-accent-amber/10 flex items-center justify-center text-accent-amber"><svg class="w-5 h-5"><use href="#i-shield"/></svg></div>
+            <div><div class="font-bold text-sm text-ink dark:text-white">收 0 差价</div><div class="text-xs text-ink-faint dark:text-gray-500">账目全公开</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Features ===== -->
+<section id="features" class="py-20 lg:py-28">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-14">
+      <span class="text-sm font-semibold text-brand uppercase tracking-wider">为什么这么便宜</span>
+      <h2 class="text-3xl lg:text-4xl font-extrabold tracking-tight mt-2 mb-3">拼团不是砍价，是把用量凑上去</h2>
+      <p class="text-ink-soft dark:text-gray-400 max-w-2xl mx-auto">上游按「日消耗量」分级给价。我们用用量换批发价，再按成本价分给你，三方共赢。</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="card-hover bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-100 dark:border-gray-700">
+        <div class="w-12 h-12 rounded-xl bg-brand-light dark:bg-brand/15 flex items-center justify-center text-brand mb-5"><svg class="w-6 h-6"><use href="#i-layers"/></svg></div>
+        <h3 class="text-xl font-bold mb-2">用量合并计费</h3>
+        <p class="text-ink-soft dark:text-gray-400 leading-relaxed">大家各自调用，用量合并计入一个上游账号，冲量级门槛，解锁更低的批发单价。</p>
+      </div>
+      <div class="card-hover bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-100 dark:border-gray-700">
+        <div class="w-12 h-12 rounded-xl bg-accent-green/10 flex items-center justify-center text-accent-green mb-5"><svg class="w-6 h-6"><use href="#i-shield"/></svg></div>
+        <h3 class="text-xl font-bold mb-2">计量只以上游为准</h3>
+        <p class="text-ink-soft dark:text-gray-400 leading-relaxed">扣费 token = 上游返回的真实 usage，平台不改、不加、不编，你随时可查。</p>
+      </div>
+      <div class="card-hover bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-100 dark:border-gray-700">
+        <div class="w-12 h-12 rounded-xl bg-accent-amber/10 flex items-center justify-center text-accent-amber mb-5"><svg class="w-6 h-6"><use href="#i-receipt"/></svg></div>
+        <h3 class="text-xl font-bold mb-2">成本账目全公开</h3>
+        <p class="text-ink-soft dark:text-gray-400 leading-relaxed">上游成本价、渠道手续费全部摊开。你能不能自己算出我们赚不赚——这才叫透明。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Models ===== -->
+<section id="models" class="py-20 lg:py-28 bg-white dark:bg-[#0d1424]">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-14">
+      <span class="text-sm font-semibold text-brand uppercase tracking-wider">热门拼团</span>
+      <h2 class="text-3xl lg:text-4xl font-extrabold tracking-tight mt-2 mb-3">正在拼团的模型</h2>
+      <p class="text-ink-soft dark:text-gray-400 max-w-2xl mx-auto">用量驱动进度——离量级门槛越近，批发价越低。</p>
+    </div>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="model-grid">
+      <!-- Cards will be rendered by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ===== Docs ===== -->
+<section id="docs" class="py-20 lg:py-28">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-14">
+      <span class="text-sm font-semibold text-brand uppercase tracking-wider">快速接入</span>
+      <h2 class="text-3xl lg:text-4xl font-extrabold tracking-tight mt-2 mb-3">三行代码，把 base_url 换成我们</h2>
+      <p class="text-ink-soft dark:text-gray-400">兼容 OpenAI / Anthropic / Gemini SDK，改个地址就能用。</p>
+    </div>
+    <div class="bg-[#0d1424] rounded-2xl overflow-hidden border border-gray-800">
+      <div class="flex items-center gap-2 px-5 py-3 border-b border-gray-800">
+        <div class="w-3 h-3 rounded-full bg-red-400"></div>
+        <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+        <div class="w-3 h-3 rounded-full bg-green-400"></div>
+        <span class="text-gray-500 text-sm ml-2 font-mono">openai.py</span>
+      </div>
+      <pre class="p-6 text-sm font-mono text-gray-300 overflow-x-auto"><code><span class="text-purple-400">from</span> openai <span class="text-purple-400">import</span> OpenAI
+
+client = OpenAI(
+    api_key=<span class="text-green-400">"sk-relay-xxxxx"</span>,
+    base_url=<span class="text-green-400">"https://relay.yxpil.com/v1"</span>  <span class="text-gray-500"># 只改这里</span>
+)
+
+resp = client.chat.completions.create(
+    model=<span class="text-green-400">"deepseek-r1"</span>,
+    messages=[{<span class="text-green-400">"role"</span>: <span class="text-green-400">"user"</span>, <span class="text-green-400">"content"</span>: <span class="text-green-400">"你好"</span>}],
+)
+<span class="text-purple-400">print</span>(resp.choices[<span class="text-orange-400">0</span>].message.content)</code></pre>
+    </div>
+    <div class="grid sm:grid-cols-3 gap-4 mt-8">
+      <div class="flex items-start gap-3 p-5 rounded-xl bg-brand-light dark:bg-brand/10">
+        <svg class="w-5 h-5 text-brand flex-shrink-0 mt-0.5"><use href="#i-key"/></svg>
+        <div><div class="font-semibold text-sm text-ink dark:text-white">1. 注册拿 Key</div><div class="text-sm text-ink-soft dark:text-gray-400 mt-0.5">控制台创建 API Key</div></div>
+      </div>
+      <div class="flex items-start gap-3 p-5 rounded-xl bg-brand-light dark:bg-brand/10">
+        <svg class="w-5 h-5 text-brand flex-shrink-0 mt-0.5"><use href="#i-code"/></svg>
+        <div><div class="font-semibold text-sm text-ink dark:text-white">2. 改 base_url</div><div class="text-sm text-ink-soft dark:text-gray-400 mt-0.5">指向中转站地址</div></div>
+      </div>
+      <div class="flex items-start gap-3 p-5 rounded-xl bg-brand-light dark:bg-brand/10">
+        <svg class="w-5 h-5 text-brand flex-shrink-0 mt-0.5"><use href="#i-zap"/></svg>
+        <div><div class="font-semibold text-sm text-ink dark:text-white">3. 开始调用</div><div class="text-sm text-ink-soft dark:text-gray-400 mt-0.5">享受拼团低价</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Footer ===== -->
+<footer class="bg-[#0a1020] text-gray-400">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <div class="grid md:grid-cols-[2fr_1fr_1fr_1fr] gap-10">
+      <div>
+        <div class="flex items-center gap-2.5 mb-3">
+          <img src="060bfc2b3cd9eb7b1431c3f9c41ff42c.jpg" alt="Logo" class="w-8 h-8 rounded-lg object-cover">
+          <span class="font-bold text-white text-lg">Model Relay</span>
+        </div>
+        <p class="text-sm leading-relaxed max-w-xs">公益性质的 AI 大模型 API 拼团中转平台。把用量凑上去拿低价，按成本价分给大家，平台不收一分钱差价。</p>
+      </div>
+      <div>
+        <h4 class="font-semibold text-white text-sm mb-3">平台</h4>
+        <div class="flex flex-col gap-2 text-sm">
+          <a href="#models" class="hover:text-white transition">模型大厅</a>
+          <a href="#features" class="hover:text-white transition">特性</a>
+          <a href="#docs" class="hover:text-white transition">接入文档</a>
+        </div>
+      </div>
+      <div>
+        <h4 class="font-semibold text-white text-sm mb-3">合规</h4>
+        <div class="flex flex-col gap-2 text-sm">
+          <a href="#" class="hover:text-white transition">服务协议</a>
+          <a href="#" class="hover:text-white transition">隐私政策</a>
+        </div>
+      </div>
+      <div>
+        <h4 class="font-semibold text-white text-sm mb-3">支持</h4>
+        <div class="flex flex-col gap-2 text-sm">
+          <a href="#" class="hover:text-white transition">加入群聊</a>
+          <a href="#" class="hover:text-white transition">意见反馈</a>
+        </div>
+      </div>
+    </div>
+    <div class="mt-12 pt-6 border-t border-gray-800 text-sm text-gray-500 flex flex-wrap justify-between gap-4">
+      <span>© 2026 Model Relay · model-relay</span>
+      <span>Built with Rust + Axum + Tailwind</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== Login Modal ===== -->
+<div id="login-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 backdrop-blur-sm">
+  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden" onclick="event.stopPropagation()">
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="text-lg font-bold text-ink dark:text-white">登录</h3>
+        <button onclick="closeLogin()" class="w-8 h-8 rounded-lg flex items-center justify-center text-ink-faint hover:bg-gray-100 dark:hover:bg-gray-700 text-xl">×</button>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="text-sm font-medium text-ink-soft dark:text-gray-400 mb-1.5 block">用户名</label>
+          <input type="text" id="login-user" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-ink dark:text-white focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition" placeholder="输入用户名">
+        </div>
+        <div>
+          <label class="text-sm font-medium text-ink-soft dark:text-gray-400 mb-1.5 block">密码</label>
+          <input type="password" id="login-pass" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-ink dark:text-white focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition" placeholder="输入密码">
+        </div>
+        <button onclick="doLogin()" class="w-full py-2.5 rounded-xl bg-brand text-white font-semibold hover:bg-brand-dark transition shadow-lg shadow-brand/30">登录</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- Theme ----
+function toggleTheme() {
+  document.documentElement.classList.toggle('dark');
+  localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+}
+if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+
+// ---- Login Modal ----
+function openLogin() { const m = document.getElementById('login-modal'); m.classList.remove('hidden'); m.classList.add('flex'); }
+function closeLogin() { const m = document.getElementById('login-modal'); m.classList.add('hidden'); m.classList.remove('flex'); }
+document.getElementById('login-modal').addEventListener('click', closeLogin);
+function doLogin() {
+  const u = document.getElementById('login-user').value;
+  const p = document.getElementById('login-pass').value;
+  fetch('/api/auth/login', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ username: u, password: p, captcha_id: '', captcha: '' })
+  }).then(r => r.ok ? r.json() : Promise.reject(r)).then(d => { location.reload(); }).catch(() => alert('登录失败，请检查用户名密码'));
+}
+
+// ---- Model Cards ----
+const models = [
+  { name: 'DeepSeek-R1', vendor: '阿里云', tag: '退档预警', tagClass: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
+    price: 28, input: 11.2, was: 40, save: '30%', desc: '推理能力强的开源大模型，适合复杂逻辑与代码',
+    cur: 246, target: 266, progress: 5, tiers: [28, 21, 16.8], tierLabels: ['第一阶梯','第二阶梯','第三阶梯'], currentTier: 1 },
+  { name: 'Qwen-Max', vendor: '阿里云', tag: '冲刺升档', tagClass: 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
+    price: 22, input: 11, was: 30, save: '27%', desc: '旗舰级多模态大模型，兼顾理解与生成',
+    cur: 264, target: 220, progress: 100, tiers: [22, 17, 13.2], tierLabels: ['第一阶梯','第二阶梯','第三阶梯'], currentTier: 2 },
+  { name: 'GLM-4.5', vendor: '智谱AI', tag: '已拼上车', tagClass: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',
+    price: 18, input: 9, was: 25, save: '28%', desc: '新一代对话模型，中文理解突出',
+    cur: 137, target: 130, progress: 14, tiers: [18, 14, 11.5], tierLabels: ['第一阶梯','第二阶梯','第三阶梯'], currentTier: 0 },
+  { name: 'Kimi-K2', vendor: '月之暗面', tag: '已拼上车', tagClass: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',
+    price: 21, input: 10.5, was: 30, save: '30%', desc: '超长上下文，适合长文档与复杂推理',
+    cur: 147, target: 139, progress: 100, tiers: [21, 16.3], tierLabels: ['第一阶梯','第二阶梯'], currentTier: 1 },
+  { name: 'ERNIE-4.0', vendor: '百度千帆', tag: '已拼上车', tagClass: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',
+    price: 14, input: 4.2, was: 20, save: '30%', desc: '文心大模型，中文知识理解突出',
+    cur: 75.6, target: 70, progress: 27, tiers: [14, 10.9, 8.7], tierLabels: ['第一阶梯','第二阶梯','第三阶梯'], currentTier: 1 },
+  { name: 'Qwen-Plus', vendor: '阿里云', tag: '退档预警', tagClass: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
+    price: 5.6, input: 2.8, was: 8, save: '30%', desc: '高性价比通用模型，适合大多数生产场景',
+    cur: 35.8, target: 39.2, progress: 13, tiers: [5.6, 4.3], tierLabels: ['第一阶梯','第二阶梯'], currentTier: 0 },
+];
+
+function renderModels() {
+  const grid = document.getElementById('model-grid');
+  grid.innerHTML = models.map((m, i) => {
+    const tierDots = m.tiers.map((t, ti) => {
+      const reached = ti <= m.currentTier;
+      const pos = m.tiers.length === 2 ? (ti === 0 ? 0 : 100) : (ti === 0 ? 0 : ti === 1 ? 33 : 100);
+      const colorClass = reached ? 'bg-brand' : 'bg-gray-300 dark:bg-gray-600';
+      return `<span class="absolute w-3 h-3 rounded-full ${colorClass} ring-2 ring-white dark:ring-gray-800 -translate-x-1/2" style="left:${pos}%" title="${m.tierLabels[ti]} ¥${t}"></span>`;
+    }).join('');
+    const tierLabels = m.tiers.map((t, ti) => {
+      const reached = ti <= m.currentTier;
+      return `<span class="${reached ? 'text-ink dark:text-white font-medium' : 'text-ink-faint dark:text-gray-500'}">${m.tierLabels[ti]}</span>`;
+    }).join('');
+    const isDanger = m.tag === '退档预警';
+    const fillClass = isDanger ? 'bg-red-400' : 'bg-brand';
+    return `
+    <div class="card-hover bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 cursor-pointer relative overflow-hidden">
+      ${isDanger ? '<div class="absolute left-0 top-0 bottom-0 w-1 bg-red-400"></div>' : m.tag === '已拼上车' ? '<div class="absolute left-0 top-0 bottom-0 w-1 bg-green-400"></div>' : '<div class="absolute left-0 top-0 bottom-0 w-1 bg-amber-400"></div>'}
+      <div class="flex items-start justify-between mb-4">
+        <div>
+          <div class="font-bold text-lg text-ink dark:text-white">${m.name}</div>
+          <div class="text-sm text-ink-faint dark:text-gray-500"><span class="inline-block px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-xs mr-1">${m.vendor}</span>官方接入</div>
+        </div>
+        <span class="text-xs px-2.5 py-1 rounded-full font-medium ${m.tagClass}">${m.tag}</span>
+      </div>
+      <div class="flex items-baseline gap-2 mb-2">
+        <span class="text-2xl font-extrabold text-ink dark:text-white">¥${m.price}</span>
+        <span class="text-sm text-ink-faint dark:text-gray-500">/百万token · 输入 ¥${m.input}</span>
+        <span class="text-sm text-ink-faint dark:text-gray-500 line-through">¥${m.was}</span>
+        <span class="text-sm font-semibold text-accent-green">省 ${m.save}</span>
+      </div>
+      <p class="text-sm text-ink-soft dark:text-gray-400 mb-4">${m.desc}</p>
+      <div class="mb-4">
+        <div class="flex justify-between text-xs text-ink-soft dark:text-gray-400 mb-2">
+          <span>全团今日消耗 <b class="text-ink dark:text-white">¥${m.cur}</b></span>
+          <span>保档线 <b class="text-ink dark:text-white">¥${m.target}</b></span>
+        </div>
+        <div class="relative h-2 rounded-full bg-gray-100 dark:bg-gray-700">
+          <div class="tier-fill h-full rounded-full ${fillClass}" style="width:${m.progress}%"></div>
+          ${tierDots}
+        </div>
+        <div class="flex justify-between text-xs mt-2">${tierLabels}</div>
+      </div>
+      <div class="flex gap-2 pt-4 border-t border-gray-100 dark:border-gray-700">
+        <button class="flex-1 py-2 rounded-lg text-sm font-medium border border-gray-200 dark:border-gray-600 text-ink-soft dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">查看详情</button>
+        <button class="flex-1 py-2 rounded-lg text-sm font-semibold bg-brand text-white hover:bg-brand-dark transition">立即使用</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+renderModels();
+</script>
+</body>
+</html>

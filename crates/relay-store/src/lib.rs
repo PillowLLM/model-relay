@@ -202,7 +202,7 @@ impl Store for SqliteStore {
         let conn = self.conn.lock().unwrap();
         let (count_sql, list_sql) = match user_id {
             Some(uid) => ("SELECT COUNT(*) FROM tokens WHERE user_id=?1", "SELECT * FROM tokens WHERE user_id=?1 ORDER BY id DESC LIMIT ?2 OFFSET ?3"),
-            None => ("SELECT COUNT(*) FROM tokens", "SELECT * FROM tokens ORDER BY id DESC LIMIT ?2 OFFSET ?3"),
+            None => ("SELECT COUNT(*) FROM tokens", "SELECT * FROM tokens ORDER BY id DESC LIMIT ?1 OFFSET ?2"),
         };
         let total: u32 = if let Some(uid) = user_id { conn.query_row(count_sql, params![uid], |r| r.get(0)) } else { conn.query_row(count_sql, [], |r| r.get(0)) }.map_err(rusql_err)?;
         let offset = page.saturating_sub(1) * size;
@@ -240,7 +240,7 @@ impl Store for SqliteStore {
         let conn = self.conn.lock().unwrap();
         let total: u32 = match status { Some(s) => conn.query_row("SELECT COUNT(*) FROM redeem_codes WHERE status=?1", params![s], |r| r.get(0)), None => conn.query_row("SELECT COUNT(*) FROM redeem_codes", [], |r| r.get(0)) }.map_err(rusql_err)?;
         let offset = page.saturating_sub(1) * size;
-        let mut stmt = if let Some(s) = status { conn.prepare("SELECT * FROM redeem_codes WHERE status=?1 ORDER BY id DESC LIMIT ?2 OFFSET ?3").map_err(rusql_err)? } else { conn.prepare("SELECT * FROM redeem_codes ORDER BY id DESC LIMIT ?2 OFFSET ?3").map_err(rusql_err)? };
+        let mut stmt = if let Some(s) = status { conn.prepare("SELECT * FROM redeem_codes WHERE status=?1 ORDER BY id DESC LIMIT ?2 OFFSET ?3").map_err(rusql_err)? } else { conn.prepare("SELECT * FROM redeem_codes ORDER BY id DESC LIMIT ?1 OFFSET ?2").map_err(rusql_err)? };
         let items = if let Some(s) = status { stmt.query_map(params![s, size, offset], row_redeem).map_err(rusql_err)?.filter_map(|r| r.ok()).collect() } else { stmt.query_map(params![size, offset], row_redeem).map_err(rusql_err)?.filter_map(|r| r.ok()).collect() };
         Ok((items, total))
     }

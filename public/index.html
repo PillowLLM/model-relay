@@ -13,240 +13,96 @@ tailwind.config = {
       colors: {
         brand: { DEFAULT: '#4f5df1', dark: '#3a45d6', light: '#edf0ff', light2: '#dfe4ff' },
         ink: { DEFAULT: '#0b1624', soft: '#55637a', faint: '#9aa5ba' },
-        accent: { green: '#0a9d78', greenL: '#e6f6f1', amber: '#b5721f', amberL: '#fbf1e2', purple: '#6d50d1' },
+        accent: { green: '#0a9d78', greenL: '#e6f6f1', amber: '#b5721f', amberL: '#fbf1e2', purple: '#6d50d1', red: '#dc2626', redL: '#fde8e8' },
       },
-      fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
-      },
+      fontFamily: { sans: ['Inter','system-ui','sans-serif'], mono: ['JetBrains Mono','monospace'] },
     }
   }
 }
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="icon" href="060bfc2b3cd9eb7b1431c3f9c41ff42c.jpg">
 <style>
   body { font-feature-settings: 'cv02','cv03','cv04','cv11'; }
-  .grid-bg {
-    background-image:
-      linear-gradient(rgba(79,93,241,.06) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(79,93,241,.06) 1px, transparent 1px);
-    background-size: 48px 48px;
-  }
+  .grid-bg { background-image: linear-gradient(rgba(79,93,241,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(79,93,241,.06) 1px, transparent 1px); background-size: 48px 48px; }
   .glow { background: radial-gradient(circle at center, rgba(79,93,241,.16), transparent 60%); }
   .gradient-text { background: linear-gradient(100deg, #4f5df1, #8b5cf6); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-  .card-hover { transition: all .25s ease; }
-  .card-hover:hover { transform: translateY(-4px); box-shadow: 0 24px 60px rgba(16,24,40,.12); }
-  .tier-fill { transition: width .6s ease; }
-  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  .card-hover { transition: all .25s ease; } .card-hover:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(16,24,40,.1); }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
   .float-anim { animation: float 4s ease-in-out infinite; }
-  .float-anim-delay { animation: float 4s ease-in-out infinite; animation-delay: 1.5s; }
+  .nav-item { cursor: pointer; }
+  .tab.active { background: white; box-shadow: 0 1px 3px rgba(0,0,0,.08); color: #0b1624; }
+  .dark .tab.active { background: #1f2937; color: #f3f4f6; }
+  .toast-enter { animation: toastIn .3s ease-out; }
+  @keyframes toastIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+  .spin { animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  th, td { text-align: left; }
+  .modal-backdrop { backdrop-filter: blur(4px); }
+  [hidden] { display: none !important; }
 </style>
 </head>
-<body class="bg-gray-50 dark:bg-[#0b1120] text-ink dark:text-gray-100 font-sans antialiased transition-colors">
+<body class="bg-gray-50 dark:bg-[#0b1120] text-ink dark:text-gray-100 font-sans antialiased min-h-screen flex flex-col">
 
-<!-- ===== SVG Icon Sprite ===== -->
+<!-- SVG sprite -->
 <svg class="hidden">
   <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></symbol>
   <symbol id="i-cpu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></symbol>
   <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.5 8 8 10 4.5-2 8-5 8-10V6l-8-4z"/><path d="m9 12 2 2 4-4"/></symbol>
   <symbol id="i-receipt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M8 7h8M8 11h8M8 15h5"/></symbol>
   <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 10 5-10 5L2 7l10-5Z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></symbol>
-  <symbol id="i-bolt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></symbol>
   <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 5-6"/></symbol>
-  <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20Z"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></symbol>
   <symbol id="i-warn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></symbol>
-  <symbol id="i-key" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15.5 7.5 5 5L21 14l-1.5-.5L18 15l-1.5-1.5L15 15l-3-3a5 5 0 1 0-7 7 5 5 0 0 0 7 0"/><circle cx="7.5" cy="15.5" r="1.5"/></symbol>
-  <symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></symbol>
-  <symbol id="i-code" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></symbol>
-  <symbol id="i-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></symbol>
-  <symbol id="i-wallet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4M3 5v14a2 2 0 0 0 2 2h16v-5M18 12a2 2 0 0 0 0 4h4v-4Z"/></symbol>
   <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M9 22V12h6v10"/></symbol>
+  <symbol id="i-dashboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15.5 7.5 5 5L21 14l-1.5-.5L18 15l-1.5-1.5L15 15l-3-3a5 5 0 1 0-7 7 5 5 0 0 0 7 0"/><circle cx="7.5" cy="15.5" r="1.5"/></symbol>
+  <symbol id="i-token" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 8h6v3H9zM9 13h6v3H9z"/></symbol>
+  <symbol id="i-pricing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V7z"/><path d="M8 11h8M12 7V4"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v9h14v-9M12 8S10 2 7 5s5 3 5 3zM12 8s2-6 5-3-5 3-5 3z"/></symbol>
+  <symbol id="i-channel" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v6H4zM4 14h16v6H4zM9 7h.01M9 17h.01"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></symbol>
 </svg>
 
+<!-- ===== Toast Container ===== -->
+<div id="toasts" class="fixed top-4 right-4 z-[100] space-y-2 w-80"></div>
+
 <!-- ===== Nav ===== -->
-<nav class="sticky top-0 z-50 backdrop-blur-xl bg-white/72 dark:bg-[#0b1120]/72 border-b border-gray-200/60 dark:border-gray-800/60">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-    <div class="flex items-center gap-2.5 cursor-pointer" onclick="scrollTo({top:0})">
+<nav class="sticky top-0 z-40 backdrop-blur-xl bg-white/72 dark:bg-[#0b1120]/72 border-b border-gray-200/60 dark:border-gray-800/60">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-2.5 cursor-pointer" onclick="goHome()">
       <img src="060bfc2b3cd9eb7b1431c3f9c41ff42c.jpg" alt="Logo" class="w-9 h-9 rounded-xl object-cover ring-2 ring-brand/20">
-      <div class="font-bold text-lg tracking-tight">Model Relay<span class="text-ink-faint dark:text-gray-500 font-normal text-sm ml-1.5">· 中转站</span></div>
+      <div class="font-bold text-lg tracking-tight">Model Relay<span class="text-ink-faint dark:text-gray-500 font-normal text-sm ml-1.5 hidden sm:inline">· 中转站</span></div>
     </div>
-    <div class="hidden md:flex items-center gap-1 text-sm font-medium text-ink-soft dark:text-gray-400">
-      <a href="#home" class="px-3 py-2 rounded-lg hover:bg-brand-light dark:hover:bg-brand/10 hover:text-brand transition">首页</a>
-      <a href="#models" class="px-3 py-2 rounded-lg hover:bg-brand-light dark:hover:bg-brand/10 hover:text-brand transition">模型大厅</a>
-      <a href="#features" class="px-3 py-2 rounded-lg hover:bg-brand-light dark:hover:bg-brand/10 hover:text-brand transition">特性</a>
-      <a href="#docs" class="px-3 py-2 rounded-lg hover:bg-brand-light dark:hover:bg-brand/10 hover:text-brand transition">接入文档</a>
+    <div id="nav-links" class="hidden md:flex items-center gap-1 text-sm font-medium text-ink-soft dark:text-gray-400">
+      <!-- populated by renderNav() -->
     </div>
     <div class="flex items-center gap-2">
       <button onclick="toggleTheme()" class="w-9 h-9 rounded-lg flex items-center justify-center text-ink-soft dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition" title="切换主题">
         <svg class="w-5 h-5 hidden dark:block"><use href="#i-moon"/></svg>
         <svg class="w-5 h-5 dark:hidden"><use href="#i-sun"/></svg>
       </button>
-      <a href="#" onclick="openLogin();return false" class="px-4 py-2 rounded-lg bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition shadow-sm shadow-brand/30">登录</a>
+      <div id="auth-nav" class="flex items-center gap-2"><!-- rendered --></div>
     </div>
   </div>
 </nav>
 
-<!-- ===== Hero ===== -->
-<section id="home" class="relative overflow-hidden">
-  <div class="absolute inset-0 grid-bg opacity-50 dark:opacity-20"></div>
-  <div class="absolute top-0 right-0 w-[600px] h-[600px] glow blur-2xl"></div>
-  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
-    <div class="grid lg:grid-cols-[1.1fr_0.9fr] gap-12 items-center">
-      <div>
-        <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-green/10 text-accent-green text-sm font-medium mb-6">
-          <span class="w-2 h-2 rounded-full bg-accent-green animate-pulse"></span>
-          公益拼团 · 已帮 862 位开发者拿低价
-        </span>
-        <h1 class="text-4xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-5">
-          找搭子，拼模型<br>
-          用量越大，<span class="gradient-text">价格越低</span>
-        </h1>
-        <p class="text-lg text-ink-soft dark:text-gray-400 max-w-xl mb-8 leading-relaxed">
-          上游按「日消耗量」给批发价。我们把大家的用量合并进同一个账号，冲到量级门槛，再按成本价分给你——平台不收一分钱差价。
-        </p>
-        <div class="flex flex-wrap gap-3 mb-12">
-          <a href="#models" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand text-white font-semibold hover:bg-brand-dark transition shadow-lg shadow-brand/30">
-            进入模型大厅
-            <svg class="w-4 h-4"><use href="#i-arrow"/></svg>
-          </a>
-          <a href="#features" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white dark:bg-gray-800 text-ink dark:text-gray-200 font-semibold border border-gray-200 dark:border-gray-700 hover:border-brand dark:hover:border-brand transition">
-            看我们怎么不赚差价
-          </a>
-        </div>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-8 border-t border-gray-200 dark:border-gray-800">
-          <div><div class="text-3xl font-extrabold text-ink dark:text-white">8.6<span class="text-base font-bold text-ink-soft ml-0.5">亿</span></div><div class="text-sm text-ink-faint dark:text-gray-500 mt-1">累计 token 用量</div></div>
-          <div><div class="text-3xl font-extrabold text-ink dark:text-white">862</div><div class="text-sm text-ink-faint dark:text-gray-500 mt-1">开发者成员</div></div>
-          <div><div class="text-3xl font-extrabold text-accent-green">¥0</div><div class="text-sm text-ink-faint dark:text-gray-500 mt-1">平台差价</div></div>
-          <div><div class="text-3xl font-extrabold text-ink dark:text-white">12</div><div class="text-sm text-ink-faint dark:text-gray-500 mt-1">在拼模型</div></div>
-        </div>
-      </div>
-      <div class="relative h-[420px] hidden lg:block">
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 float-anim">
-          <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-2xl border border-gray-100 dark:border-gray-700 text-center">
-            <img src="060bfc2b3cd9eb7b1431c3f9c41ff42c.jpg" alt="Model Relay" class="w-32 h-32 rounded-2xl object-cover mx-auto mb-4 ring-4 ring-brand/10">
-            <div class="font-bold text-xl text-ink dark:text-white">Model Relay</div>
-            <div class="text-sm text-ink-faint dark:text-gray-500">model-relay</div>
-          </div>
-        </div>
-        <div class="absolute top-8 left-0 float-anim-delay">
-          <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-xl border border-gray-100 dark:border-gray-700 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-brand-light dark:bg-brand/15 flex items-center justify-center text-brand"><svg class="w-5 h-5"><use href="#i-cpu"/></svg></div>
-            <div><div class="font-bold text-sm text-ink dark:text-white">累计 2.6亿</div><div class="text-xs text-ink-faint dark:text-gray-500">模型消耗总量</div></div>
-          </div>
-        </div>
-        <div class="absolute bottom-8 right-0 float-anim">
-          <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-xl border border-gray-100 dark:border-gray-700 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-accent-green/10 flex items-center justify-center text-accent-green"><svg class="w-5 h-5"><use href="#i-chart"/></svg></div>
-            <div><div class="font-bold text-sm text-ink dark:text-white">今日 880万</div><div class="text-xs text-ink-faint dark:text-gray-500">token / 天</div></div>
-          </div>
-        </div>
-        <div class="absolute top-1/2 right-0 float-anim-delay">
-          <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-xl border border-gray-100 dark:border-gray-700 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-accent-amber/10 flex items-center justify-center text-accent-amber"><svg class="w-5 h-5"><use href="#i-shield"/></svg></div>
-            <div><div class="font-bold text-sm text-ink dark:text-white">收 0 差价</div><div class="text-xs text-ink-faint dark:text-gray-500">账目全公开</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+<!-- ===== App Root ===== -->
+<main id="app" class="flex-1"></main>
 
-<!-- ===== Features ===== -->
-<section id="features" class="py-20 lg:py-28">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-14">
-      <span class="text-sm font-semibold text-brand uppercase tracking-wider">为什么这么便宜</span>
-      <h2 class="text-3xl lg:text-4xl font-extrabold tracking-tight mt-2 mb-3">拼团不是砍价，是把用量凑上去</h2>
-      <p class="text-ink-soft dark:text-gray-400 max-w-2xl mx-auto">上游按「日消耗量」分级给价。我们用用量换批发价，再按成本价分给你，三方共赢。</p>
-    </div>
-    <div class="grid md:grid-cols-3 gap-6">
-      <div class="card-hover bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-100 dark:border-gray-700">
-        <div class="w-12 h-12 rounded-xl bg-brand-light dark:bg-brand/15 flex items-center justify-center text-brand mb-5"><svg class="w-6 h-6"><use href="#i-layers"/></svg></div>
-        <h3 class="text-xl font-bold mb-2">用量合并计费</h3>
-        <p class="text-ink-soft dark:text-gray-400 leading-relaxed">大家各自调用，用量合并计入一个上游账号，冲量级门槛，解锁更低的批发单价。</p>
-      </div>
-      <div class="card-hover bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-100 dark:border-gray-700">
-        <div class="w-12 h-12 rounded-xl bg-accent-green/10 flex items-center justify-center text-accent-green mb-5"><svg class="w-6 h-6"><use href="#i-shield"/></svg></div>
-        <h3 class="text-xl font-bold mb-2">计量只以上游为准</h3>
-        <p class="text-ink-soft dark:text-gray-400 leading-relaxed">扣费 token = 上游返回的真实 usage，平台不改、不加、不编，你随时可查。</p>
-      </div>
-      <div class="card-hover bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-100 dark:border-gray-700">
-        <div class="w-12 h-12 rounded-xl bg-accent-amber/10 flex items-center justify-center text-accent-amber mb-5"><svg class="w-6 h-6"><use href="#i-receipt"/></svg></div>
-        <h3 class="text-xl font-bold mb-2">成本账目全公开</h3>
-        <p class="text-ink-soft dark:text-gray-400 leading-relaxed">上游成本价、渠道手续费全部摊开。你能不能自己算出我们赚不赚——这才叫透明。</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===== Models ===== -->
-<section id="models" class="py-20 lg:py-28 bg-white dark:bg-[#0d1424]">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-14">
-      <span class="text-sm font-semibold text-brand uppercase tracking-wider">热门拼团</span>
-      <h2 class="text-3xl lg:text-4xl font-extrabold tracking-tight mt-2 mb-3">正在拼团的模型</h2>
-      <p class="text-ink-soft dark:text-gray-400 max-w-2xl mx-auto">用量驱动进度——离量级门槛越近，批发价越低。</p>
-    </div>
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="model-grid">
-      <!-- Cards will be rendered by JS -->
-    </div>
-  </div>
-</section>
-
-<!-- ===== Docs ===== -->
-<section id="docs" class="py-20 lg:py-28">
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-14">
-      <span class="text-sm font-semibold text-brand uppercase tracking-wider">快速接入</span>
-      <h2 class="text-3xl lg:text-4xl font-extrabold tracking-tight mt-2 mb-3">三行代码，把 base_url 换成我们</h2>
-      <p class="text-ink-soft dark:text-gray-400">兼容 OpenAI / Anthropic / Gemini SDK，改个地址就能用。</p>
-    </div>
-    <div class="bg-[#0d1424] rounded-2xl overflow-hidden border border-gray-800">
-      <div class="flex items-center gap-2 px-5 py-3 border-b border-gray-800">
-        <div class="w-3 h-3 rounded-full bg-red-400"></div>
-        <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
-        <div class="w-3 h-3 rounded-full bg-green-400"></div>
-        <span class="text-gray-500 text-sm ml-2 font-mono">openai.py</span>
-      </div>
-      <pre class="p-6 text-sm font-mono text-gray-300 overflow-x-auto"><code><span class="text-purple-400">from</span> openai <span class="text-purple-400">import</span> OpenAI
-
-client = OpenAI(
-    api_key=<span class="text-green-400">"sk-relay-xxxxx"</span>,
-    base_url=<span class="text-green-400">"https://relay.yxpil.com/v1"</span>  <span class="text-gray-500"># 只改这里</span>
-)
-
-resp = client.chat.completions.create(
-    model=<span class="text-green-400">"deepseek-r1"</span>,
-    messages=[{<span class="text-green-400">"role"</span>: <span class="text-green-400">"user"</span>, <span class="text-green-400">"content"</span>: <span class="text-green-400">"你好"</span>}],
-)
-<span class="text-purple-400">print</span>(resp.choices[<span class="text-orange-400">0</span>].message.content)</code></pre>
-    </div>
-    <div class="grid sm:grid-cols-3 gap-4 mt-8">
-      <div class="flex items-start gap-3 p-5 rounded-xl bg-brand-light dark:bg-brand/10">
-        <svg class="w-5 h-5 text-brand flex-shrink-0 mt-0.5"><use href="#i-key"/></svg>
-        <div><div class="font-semibold text-sm text-ink dark:text-white">1. 注册拿 Key</div><div class="text-sm text-ink-soft dark:text-gray-400 mt-0.5">控制台创建 API Key</div></div>
-      </div>
-      <div class="flex items-start gap-3 p-5 rounded-xl bg-brand-light dark:bg-brand/10">
-        <svg class="w-5 h-5 text-brand flex-shrink-0 mt-0.5"><use href="#i-code"/></svg>
-        <div><div class="font-semibold text-sm text-ink dark:text-white">2. 改 base_url</div><div class="text-sm text-ink-soft dark:text-gray-400 mt-0.5">指向中转站地址</div></div>
-      </div>
-      <div class="flex items-start gap-3 p-5 rounded-xl bg-brand-light dark:bg-brand/10">
-        <svg class="w-5 h-5 text-brand flex-shrink-0 mt-0.5"><use href="#i-zap"/></svg>
-        <div><div class="font-semibold text-sm text-ink dark:text-white">3. 开始调用</div><div class="text-sm text-ink-soft dark:text-gray-400 mt-0.5">享受拼团低价</div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===== Footer ===== -->
-<footer class="bg-[#0a1020] text-gray-400">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+<!-- ===== Footer (visible only when on home-like routes) ===== -->
+<footer id="site-footer" class="bg-[#0a1020] text-gray-400 mt-auto">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <div class="grid md:grid-cols-[2fr_1fr_1fr_1fr] gap-10">
       <div>
         <div class="flex items-center gap-2.5 mb-3">
@@ -257,151 +113,1199 @@ resp = client.chat.completions.create(
       </div>
       <div>
         <h4 class="font-semibold text-white text-sm mb-3">平台</h4>
-        <div class="flex flex-col gap-2 text-sm">
-          <a href="#models" class="hover:text-white transition">模型大厅</a>
-          <a href="#features" class="hover:text-white transition">特性</a>
-          <a href="#docs" class="hover:text-white transition">接入文档</a>
-        </div>
+        <div class="flex flex-col gap-2 text-sm"><a href="#/" class="hover:text-white transition">首页</a><a href="#/console" class="hover:text-white transition">控制台</a><a href="#/admin" class="hover:text-white transition">管理后台</a></div>
       </div>
       <div>
         <h4 class="font-semibold text-white text-sm mb-3">合规</h4>
-        <div class="flex flex-col gap-2 text-sm">
-          <a href="#" class="hover:text-white transition">服务协议</a>
-          <a href="#" class="hover:text-white transition">隐私政策</a>
-        </div>
+        <div class="flex flex-col gap-2 text-sm"><span>服务协议</span><span>隐私政策</span></div>
       </div>
       <div>
         <h4 class="font-semibold text-white text-sm mb-3">支持</h4>
-        <div class="flex flex-col gap-2 text-sm">
-          <a href="#" class="hover:text-white transition">加入群聊</a>
-          <a href="#" class="hover:text-white transition">意见反馈</a>
-        </div>
+        <div class="flex flex-col gap-2 text-sm"><span>意见反馈</span></div>
       </div>
     </div>
-    <div class="mt-12 pt-6 border-t border-gray-800 text-sm text-gray-500 flex flex-wrap justify-between gap-4">
-      <span>© 2026 Model Relay · model-relay</span>
+    <div class="mt-10 pt-6 border-t border-gray-800 text-sm text-gray-500 flex flex-wrap justify-between gap-4">
+      <span>© 2026 Model Relay</span>
       <span>Built with Rust + Axum + Tailwind</span>
     </div>
   </div>
 </footer>
 
-<!-- ===== Login Modal ===== -->
-<div id="login-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 backdrop-blur-sm">
-  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden" onclick="event.stopPropagation()">
-    <div class="p-6">
-      <div class="flex items-center justify-between mb-5">
-        <h3 class="text-lg font-bold text-ink dark:text-white">登录</h3>
-        <button onclick="closeLogin()" class="w-8 h-8 rounded-lg flex items-center justify-center text-ink-faint hover:bg-gray-100 dark:hover:bg-gray-700 text-xl">×</button>
-      </div>
-      <div class="space-y-4">
-        <div>
-          <label class="text-sm font-medium text-ink-soft dark:text-gray-400 mb-1.5 block">用户名</label>
-          <input type="text" id="login-user" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-ink dark:text-white focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition" placeholder="输入用户名">
-        </div>
-        <div>
-          <label class="text-sm font-medium text-ink-soft dark:text-gray-400 mb-1.5 block">密码</label>
-          <input type="password" id="login-pass" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-ink dark:text-white focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition" placeholder="输入密码">
-        </div>
-        <button onclick="doLogin()" class="w-full py-2.5 rounded-xl bg-brand text-white font-semibold hover:bg-brand-dark transition shadow-lg shadow-brand/30">登录</button>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- ===== Modal Mount ===== -->
+<div id="modal-mount"></div>
 
 <script>
-// ---- Theme ----
+/* =========================================================
+   1. API Client (same-origin cookies: credentials='include')
+   ========================================================= */
+const API = {
+  async json(url, opts = {}) {
+    const res = await fetch(url, {
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
+      ...opts,
+      body: opts.body !== undefined ? (typeof opts.body === 'string' ? opts.body : JSON.stringify(opts.body)) : undefined,
+    });
+    const ct = res.headers.get('Content-Type') || '';
+    let data = null;
+    if (ct.includes('application/json')) {
+      try { data = await res.json(); } catch (_) { data = null; }
+    } else {
+      data = await res.text();
+    }
+    if (!res.ok) {
+      const msg = (data && data.error) ? data.error : `HTTP ${res.status}`;
+      const err = new Error(msg);
+      err.status = res.status;
+      err.data = data;
+      throw err;
+    }
+    return data;
+  },
+  get(u) { return this.json(u, { method: 'GET' }); },
+  post(u, body) { return this.json(u, { method: 'POST', body }); },
+  put(u, body) { return this.json(u, { method: 'PUT', body }); },
+  del(u) { return this.json(u, { method: 'DELETE' }); },
+};
+
+/* Auth */
+const Auth = {
+  _user: null,
+  async me() {
+    try { this._user = await API.get('/api/auth/me'); return this._user; }
+    catch { this._user = null; return null; }
+  },
+  async login(username, password, captcha_id='', captcha='') {
+    const res = await API.post('/api/auth/login', { username, password, captcha_id, captcha });
+    this._user = res.user || null;
+    return this._user;
+  },
+  async logout() {
+    try { await API.post('/api/auth/logout', {}); } catch(_) {}
+    this._user = null;
+  },
+  isAdmin() { return this._user && this._user.role === 'admin'; },
+  isLogged() { return !!this._user; },
+};
+
+/* =========================================================
+   2. UI helpers: toast, modal, format
+   ========================================================= */
+function toast(msg, type = 'info', dur = 3200) {
+  const colors = {
+    info:   'bg-brand text-white border-brand-dark',
+    ok:     'bg-accent-green text-white border-accent-green',
+    error:  'bg-accent-red text-white border-accent-red',
+    warn:   'bg-accent-amber text-white border-accent-amber',
+  };
+  const el = document.createElement('div');
+  el.className = `toast-enter rounded-xl px-4 py-3 text-sm shadow-lg border ${colors[type] || colors.info}`;
+  el.innerHTML = msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(() => el.remove(), dur);
+}
+
+function openModal(html) {
+  const mount = document.getElementById('modal-mount');
+  mount.innerHTML = `
+    <div class="fixed inset-0 z-[80] flex items-center justify-center modal-backdrop bg-black/40" onclick="if(event.target===this)closeModal()">
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 w-full max-w-xl mx-4 overflow-hidden" onclick="event.stopPropagation()">
+        ${html}
+      </div>
+    </div>`;
+}
+function closeModal() { document.getElementById('modal-mount').innerHTML = ''; }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+function fmtCost(v) { return (v || 0).toLocaleString('zh-CN', { minimumFractionDigits: 4, maximumFractionDigits: 4 }); }
+function fmtInt(v) { return (v || 0).toLocaleString('zh-CN'); }
+function fmtDate(s) { return (s || '').slice(0, 16).replace('T', ' '); }
+function maskKey(s) { if (!s) return ''; if (s.length <= 10) return s; return s.slice(0, 5) + '••••••' + s.slice(-4); }
+function $el(html) { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstChild; }
+
+/* Theme */
 function toggleTheme() {
   document.documentElement.classList.toggle('dark');
   localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
 }
-if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
-
-// ---- Login Modal ----
-function openLogin() { const m = document.getElementById('login-modal'); m.classList.remove('hidden'); m.classList.add('flex'); }
-function closeLogin() { const m = document.getElementById('login-modal'); m.classList.add('hidden'); m.classList.remove('flex'); }
-document.getElementById('login-modal').addEventListener('click', closeLogin);
-function doLogin() {
-  const u = document.getElementById('login-user').value;
-  const p = document.getElementById('login-pass').value;
-  fetch('/api/auth/login', {
-    method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ username: u, password: p, captcha_id: '', captcha: '' })
-  }).then(r => r.ok ? r.json() : Promise.reject(r)).then(d => { location.reload(); }).catch(() => alert('登录失败，请检查用户名密码'));
+if (localStorage.getItem('theme') === 'dark' ||
+    (localStorage.getItem('theme') !== 'light' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+  document.documentElement.classList.add('dark');
 }
 
-// ---- Model Cards ----
-const models = [
-  { name: 'DeepSeek-R1', vendor: '阿里云', tag: '退档预警', tagClass: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
-    price: 28, input: 11.2, was: 40, save: '30%', desc: '推理能力强的开源大模型，适合复杂逻辑与代码',
-    cur: 246, target: 266, progress: 5, tiers: [28, 21, 16.8], tierLabels: ['第一阶梯','第二阶梯','第三阶梯'], currentTier: 1 },
-  { name: 'Qwen-Max', vendor: '阿里云', tag: '冲刺升档', tagClass: 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
-    price: 22, input: 11, was: 30, save: '27%', desc: '旗舰级多模态大模型，兼顾理解与生成',
-    cur: 264, target: 220, progress: 100, tiers: [22, 17, 13.2], tierLabels: ['第一阶梯','第二阶梯','第三阶梯'], currentTier: 2 },
-  { name: 'GLM-4.5', vendor: '智谱AI', tag: '已拼上车', tagClass: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',
-    price: 18, input: 9, was: 25, save: '28%', desc: '新一代对话模型，中文理解突出',
-    cur: 137, target: 130, progress: 14, tiers: [18, 14, 11.5], tierLabels: ['第一阶梯','第二阶梯','第三阶梯'], currentTier: 0 },
-  { name: 'Kimi-K2', vendor: '月之暗面', tag: '已拼上车', tagClass: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',
-    price: 21, input: 10.5, was: 30, save: '30%', desc: '超长上下文，适合长文档与复杂推理',
-    cur: 147, target: 139, progress: 100, tiers: [21, 16.3], tierLabels: ['第一阶梯','第二阶梯'], currentTier: 1 },
-  { name: 'ERNIE-4.0', vendor: '百度千帆', tag: '已拼上车', tagClass: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',
-    price: 14, input: 4.2, was: 20, save: '30%', desc: '文心大模型，中文知识理解突出',
-    cur: 75.6, target: 70, progress: 27, tiers: [14, 10.9, 8.7], tierLabels: ['第一阶梯','第二阶梯','第三阶梯'], currentTier: 1 },
-  { name: 'Qwen-Plus', vendor: '阿里云', tag: '退档预警', tagClass: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
-    price: 5.6, input: 2.8, was: 8, save: '30%', desc: '高性价比通用模型，适合大多数生产场景',
-    cur: 35.8, target: 39.2, progress: 13, tiers: [5.6, 4.3], tierLabels: ['第一阶梯','第二阶梯'], currentTier: 0 },
-];
+/* =========================================================
+   3. Router (Hash)
+   ========================================================= */
+function parseHash() {
+  const raw = location.hash.replace(/^#/, '') || '/';
+  const [path, queryStr = ''] = raw.split('?');
+  const query = Object.fromEntries(new URLSearchParams(queryStr));
+  return { path, query };
+}
+function navigate(hash) { location.hash = hash; }
+function goHome() { navigate('/'); }
 
-function renderModels() {
-  const grid = document.getElementById('model-grid');
-  grid.innerHTML = models.map((m, i) => {
-    const tierDots = m.tiers.map((t, ti) => {
-      const reached = ti <= m.currentTier;
-      const pos = m.tiers.length === 2 ? (ti === 0 ? 0 : 100) : (ti === 0 ? 0 : ti === 1 ? 33 : 100);
-      const colorClass = reached ? 'bg-brand' : 'bg-gray-300 dark:bg-gray-600';
-      return `<span class="absolute w-3 h-3 rounded-full ${colorClass} ring-2 ring-white dark:ring-gray-800 -translate-x-1/2" style="left:${pos}%" title="${m.tierLabels[ti]} ¥${t}"></span>`;
-    }).join('');
-    const tierLabels = m.tiers.map((t, ti) => {
-      const reached = ti <= m.currentTier;
-      return `<span class="${reached ? 'text-ink dark:text-white font-medium' : 'text-ink-faint dark:text-gray-500'}">${m.tierLabels[ti]}</span>`;
-    }).join('');
-    const isDanger = m.tag === '退档预警';
-    const fillClass = isDanger ? 'bg-red-400' : 'bg-brand';
-    return `
-    <div class="card-hover bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 cursor-pointer relative overflow-hidden">
-      ${isDanger ? '<div class="absolute left-0 top-0 bottom-0 w-1 bg-red-400"></div>' : m.tag === '已拼上车' ? '<div class="absolute left-0 top-0 bottom-0 w-1 bg-green-400"></div>' : '<div class="absolute left-0 top-0 bottom-0 w-1 bg-amber-400"></div>'}
-      <div class="flex items-start justify-between mb-4">
+/* =========================================================
+   4. Render Nav & Auth state
+   ========================================================= */
+function renderNav() {
+  const links = document.getElementById('nav-links');
+  const isLogged = Auth.isLogged();
+  const isAdmin = Auth.isAdmin();
+  const items = [
+    { href: '#/', label: '首页', icon: 'i-home', match: p => p === '/' },
+  ];
+  if (isLogged) items.push({ href: '#/console', label: '控制台', icon: 'i-dashboard', match: p => p.startsWith('/console') });
+  if (isAdmin) items.push({ href: '#/admin', label: '管理后台', icon: 'i-shield', match: p => p.startsWith('/admin') });
+  const { path } = parseHash();
+  links.innerHTML = items.map(it => `
+    <a href="${it.href}" class="nav-item px-3 py-2 rounded-lg flex items-center gap-1.5 transition ${it.match(path) ? 'bg-brand-light dark:bg-brand/15 text-brand' : 'hover:bg-brand-light dark:hover:bg-brand/10 hover:text-brand'}">
+      <svg class="w-4 h-4"><use href="#${it.icon}"/></svg>${it.label}
+    </a>`).join('');
+
+  const authNav = document.getElementById('auth-nav');
+  if (Auth._user) {
+    const dn = Auth._user.display_name || Auth._user.username;
+    authNav.innerHTML = `
+      <div class="flex items-center gap-2">
+        <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800">
+          <svg class="w-4 h-4 text-ink-soft dark:text-gray-400"><use href="#i-user"/></svg>
+          <span class="text-sm font-medium text-ink dark:text-gray-200">${dn}</span>
+          ${Auth.isAdmin() ? '<span class="text-xs px-1.5 py-0.5 rounded bg-brand/10 text-brand">管理员</span>' : ''}
+        </div>
+        <button onclick="doLogout()" class="px-3 py-2 rounded-lg text-sm font-semibold border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center gap-1.5 transition">
+          <svg class="w-4 h-4"><use href="#i-logout"/></svg>退出
+        </button>
+      </div>`;
+  } else {
+    authNav.innerHTML = `
+      <button onclick="openLoginModal()" class="px-4 py-2 rounded-lg bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition shadow-sm shadow-brand/30 flex items-center gap-1.5">
+        <svg class="w-4 h-4"><use href="#i-user"/></svg>登录
+      </button>`;
+  }
+}
+
+/* =========================================================
+   5. Modals: Login / Channel Edit / Token Create / User Edit / Pricing / Redeem
+   ========================================================= */
+function openLoginModal() {
+  openModal(`
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="text-lg font-bold text-ink dark:text-white flex items-center gap-2">
+          <img src="060bfc2b3cd9eb7b1431c3f9c41ff42c.jpg" class="w-8 h-8 rounded-lg object-cover">登录 Model Relay
+        </h3>
+        <button onclick="closeModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-ink-faint hover:bg-gray-100 dark:hover:bg-gray-700">
+          <svg class="w-5 h-5"><use href="#i-close"/></svg>
+        </button>
+      </div>
+      <div class="space-y-4">
         <div>
-          <div class="font-bold text-lg text-ink dark:text-white">${m.name}</div>
-          <div class="text-sm text-ink-faint dark:text-gray-500"><span class="inline-block px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-xs mr-1">${m.vendor}</span>官方接入</div>
+          <label class="text-sm font-medium text-ink-soft dark:text-gray-400 mb-1.5 block">用户名</label>
+          <input id="li-user" type="text" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-ink dark:text-white focus:ring-2 focus:ring-brand focus:border-transparent outline-none" placeholder="admin">
         </div>
-        <span class="text-xs px-2.5 py-1 rounded-full font-medium ${m.tagClass}">${m.tag}</span>
-      </div>
-      <div class="flex items-baseline gap-2 mb-2">
-        <span class="text-2xl font-extrabold text-ink dark:text-white">¥${m.price}</span>
-        <span class="text-sm text-ink-faint dark:text-gray-500">/百万token · 输入 ¥${m.input}</span>
-        <span class="text-sm text-ink-faint dark:text-gray-500 line-through">¥${m.was}</span>
-        <span class="text-sm font-semibold text-accent-green">省 ${m.save}</span>
-      </div>
-      <p class="text-sm text-ink-soft dark:text-gray-400 mb-4">${m.desc}</p>
-      <div class="mb-4">
-        <div class="flex justify-between text-xs text-ink-soft dark:text-gray-400 mb-2">
-          <span>全团今日消耗 <b class="text-ink dark:text-white">¥${m.cur}</b></span>
-          <span>保档线 <b class="text-ink dark:text-white">¥${m.target}</b></span>
+        <div>
+          <label class="text-sm font-medium text-ink-soft dark:text-gray-400 mb-1.5 block">密码</label>
+          <input id="li-pass" type="password" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-ink dark:text-white focus:ring-2 focus:ring-brand focus:border-transparent outline-none" placeholder="至少 8 位">
         </div>
-        <div class="relative h-2 rounded-full bg-gray-100 dark:bg-gray-700">
-          <div class="tier-fill h-full rounded-full ${fillClass}" style="width:${m.progress}%"></div>
-          ${tierDots}
+        <div id="li-captcha-wrap" class="hidden">
+          <label class="text-sm font-medium text-ink-soft dark:text-gray-400 mb-1.5 block">验证码</label>
+          <div class="flex gap-2 items-center">
+            <img id="li-captcha-img" class="h-12 rounded-lg border border-gray-200 dark:border-gray-600 bg-white">
+            <button type="button" onclick="refreshCaptcha()" class="px-3 py-2 rounded-lg text-xs font-medium text-brand hover:bg-brand-light dark:hover:bg-brand/15">换一张</button>
+            <input id="li-cap" type="text" class="flex-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-ink dark:text-white focus:ring-2 focus:ring-brand focus:border-transparent outline-none" placeholder="输入验证码">
+          </div>
         </div>
-        <div class="flex justify-between text-xs mt-2">${tierLabels}</div>
+        <button id="li-btn" onclick="submitLogin()" class="w-full py-2.5 rounded-xl bg-brand text-white font-semibold hover:bg-brand-dark transition shadow-lg shadow-brand/30 flex items-center justify-center gap-2">
+          <svg class="w-4 h-4"><use href="#i-user"/></svg>登录
+        </button>
       </div>
-      <div class="flex gap-2 pt-4 border-t border-gray-100 dark:border-gray-700">
-        <button class="flex-1 py-2 rounded-lg text-sm font-medium border border-gray-200 dark:border-gray-600 text-ink-soft dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">查看详情</button>
-        <button class="flex-1 py-2 rounded-lg text-sm font-semibold bg-brand text-white hover:bg-brand-dark transition">立即使用</button>
+    </div>`);
+  maybeLoadCaptcha();
+}
+let captchaId = '';
+async function maybeLoadCaptcha() {
+  try {
+    const r = await API.get('/api/auth/captcha');
+    captchaId = r.id || '';
+    const wrap = document.getElementById('li-captcha-wrap');
+    if (!wrap) return;
+    if (r.id && r.image) {
+      wrap.classList.remove('hidden');
+      document.getElementById('li-captcha-img').src = r.image;
+    } else {
+      wrap.classList.add('hidden');
+    }
+  } catch(e) {
+    // captcha disabled
+    captchaId = '';
+    const w = document.getElementById('li-captcha-wrap');
+    if (w) w.classList.add('hidden');
+  }
+}
+async function refreshCaptcha() { await maybeLoadCaptcha(); }
+async function submitLogin() {
+  const u = document.getElementById('li-user').value.trim();
+  const p = document.getElementById('li-pass').value;
+  const cap = document.getElementById('li-cap') ? document.getElementById('li-cap').value.trim() : '';
+  if (!u || !p) return toast('请输入用户名和密码', 'warn');
+  const btn = document.getElementById('li-btn');
+  btn.disabled = true; btn.innerHTML = '<svg class="w-4 h-4 spin"><use href="#i-bolt"/></svg>登录中...';
+  try {
+    await Auth.login(u, p, captchaId, cap);
+    toast(`欢迎回来，${Auth._user.display_name || Auth._user.username}`, 'ok');
+    closeModal();
+    renderNav();
+    router();
+  } catch (e) {
+    toast(e.message || '登录失败', 'error');
+    refreshCaptcha();
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<svg class="w-4 h-4"><use href="#i-user"/></svg>登录';
+  }
+}
+async function doLogout() {
+  await Auth.logout();
+  toast('已退出登录', 'ok');
+  renderNav();
+  router();
+}
+
+/* Generic modal openers */
+function openFormModal(title, fieldsHtml, onSubmit) {
+  openModal(`
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="text-lg font-bold text-ink dark:text-white">${title}</h3>
+        <button onclick="closeModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-ink-faint hover:bg-gray-100 dark:hover:bg-gray-700">
+          <svg class="w-5 h-5"><use href="#i-close"/></svg>
+        </button>
+      </div>
+      <form id="modal-form" onsubmit="event.preventDefault(); window.__modalSubmit && window.__modalSubmit(this);">
+        <div class="space-y-3">${fieldsHtml}</div>
+        <div class="flex justify-end gap-2 pt-5 mt-5 border-t border-gray-100 dark:border-gray-700">
+          <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">取消</button>
+          <button type="submit" class="px-5 py-2 rounded-lg text-sm font-semibold bg-brand text-white hover:bg-brand-dark shadow-sm">保存</button>
+        </div>
+      </form>
+    </div>`);
+  window.__modalSubmit = onSubmit;
+}
+function field(label, name, opts = {}) {
+  const { value = '', type = 'text', placeholder = '', rows, required = true, step, stepAttr = step ? `step="${step}"` : '' } = opts;
+  if (type === 'textarea') {
+    return `<div>
+      <label class="text-sm font-medium text-ink-soft dark:text-gray-400 mb-1.5 block">${label}${required ? ' <span class="text-accent-red">*</span>' : ''}</label>
+      <textarea name="${name}" rows="${rows || 3}" placeholder="${placeholder}" ${required ? 'required' : ''} class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-ink dark:text-white focus:ring-2 focus:ring-brand focus:border-transparent outline-none font-mono text-sm">${value}</textarea>
+    </div>`;
+  }
+  return `<div>
+    <label class="text-sm font-medium text-ink-soft dark:text-gray-400 mb-1.5 block">${label}${required ? ' <span class="text-accent-red">*</span>' : ''}</label>
+    <input name="${name}" type="${type}" value="${value}" placeholder="${placeholder}" ${stepAttr} ${required ? 'required' : ''} class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-ink dark:text-white focus:ring-2 focus:ring-brand focus:border-transparent outline-none text-sm">
+  </div>`;
+}
+
+/* =========================================================
+   6. Views
+   ========================================================= */
+const Views = {
+  // ------------- Home (landing) -------------
+  async home() {
+    const app = document.getElementById('app');
+    let pricingHtml = '<p class="text-center text-ink-faint py-8">暂未设置模型定价，登录管理后台添加 pricing 即可展示。</p>';
+    try {
+      const pricing = await API.get('/api/admin/pricing').then(d => d.items || []).catch(() => []);
+      const modelsList = await API.get('/v1/models').then(d => d.data || []).catch(() => []);
+      if (pricing.length) {
+        pricingHtml = pricing.map(p => {
+          const mdl = (modelsList || []).find(m => m.id === p.model) || {};
+          const owned = Math.floor(Math.random() * 100 + 20);
+          return `
+          <div class="card-hover bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 relative overflow-hidden">
+            <div class="absolute left-0 top-0 bottom-0 w-1 bg-brand"></div>
+            <div class="flex items-start justify-between mb-4">
+              <div>
+                <div class="font-bold text-lg text-ink dark:text-white">${p.model}</div>
+                <div class="text-sm text-ink-faint dark:text-gray-500">官方接入 ${mdl.owned_by ? ' · ' + mdl.owned_by : ''}</div>
+              </div>
+              <span class="text-xs px-2.5 py-1 rounded-full font-medium bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400">开放拼团</span>
+            </div>
+            <div class="flex items-baseline gap-2 mb-2">
+              <span class="text-2xl font-extrabold text-ink dark:text-white">¥${fmtCost(p.prompt_price*1_000_000)}</span>
+              <span class="text-sm text-ink-faint dark:text-gray-500">/百万 prompt · 补 ¥${fmtCost(p.completion_price*1_000_000)}</span>
+            </div>
+            <p class="text-sm text-ink-soft dark:text-gray-400 mb-4">上游 API 兼容 OpenAI 格式，直接替换 base_url 即可。</p>
+            <div class="flex gap-2 pt-4 border-t border-gray-100 dark:border-gray-700">
+              <button onclick="Auth.isLogged() ? toast('请到控制台创建 API Key 后使用', 'info') : openLoginModal()" class="flex-1 py-2 rounded-lg text-sm font-semibold bg-brand text-white hover:bg-brand-dark transition">立即使用</button>
+            </div>
+          </div>`;
+        }).join('');
+      }
+    } catch(_) {}
+
+    app.innerHTML = `
+      <section class="relative overflow-hidden">
+        <div class="absolute inset-0 grid-bg opacity-50 dark:opacity-20"></div>
+        <div class="absolute top-0 right-0 w-[600px] h-[600px] glow blur-2xl"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+          <div class="grid lg:grid-cols-[1.1fr_0.9fr] gap-12 items-center">
+            <div>
+              <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-green/10 text-accent-green text-sm font-medium mb-6">
+                <span class="w-2 h-2 rounded-full bg-accent-green animate-pulse"></span>
+                公益拼团中转站 · Rust Axum 架构
+              </span>
+              <h1 class="text-4xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-5">
+                找搭子，拼模型<br>用量越大，<span class="gradient-text">价格越低</span>
+              </h1>
+              <p class="text-lg text-ink-soft dark:text-gray-400 max-w-xl mb-8 leading-relaxed">
+                上游按「日消耗量」给批发价。我们把大家的用量合并进同一个账号，冲到量级门槛，再按成本价分给你——平台不收一分钱差价。
+              </p>
+              <div class="flex flex-wrap gap-3 mb-12">
+                ${Auth.isLogged()
+                  ? `<a href="#/console" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand text-white font-semibold hover:bg-brand-dark transition shadow-lg shadow-brand/30">进入控制台<svg class="w-4 h-4"><use href="#i-arrow"/></svg></a>`
+                  : `<button onclick="openLoginModal()" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand text-white font-semibold hover:bg-brand-dark transition shadow-lg shadow-brand/30">立即登录 <svg class="w-4 h-4"><use href="#i-arrow"/></svg></button>`
+                }
+                <a href="#docs-land" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white dark:bg-gray-800 text-ink dark:text-gray-200 font-semibold border border-gray-200 dark:border-gray-700 hover:border-brand dark:hover:border-brand transition">
+                  <svg class="w-4 h-4"><use href="#i-code"/></svg>查看接入文档
+                </a>
+              </div>
+            </div>
+            <div class="relative h-[380px] hidden lg:block">
+              <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 float-anim">
+                <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-2xl border border-gray-100 dark:border-gray-700 text-center w-60">
+                  <img src="060bfc2b3cd9eb7b1431c3f9c41ff42c.jpg" alt="" class="w-28 h-28 rounded-2xl object-cover mx-auto mb-4 ring-4 ring-brand/10">
+                  <div class="font-bold text-xl text-ink dark:text-white">Model Relay</div>
+                  <div class="text-sm text-ink-faint dark:text-gray-500">Rust + Axum</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="py-16 lg:py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-12">
+            <span class="text-sm font-semibold text-brand uppercase tracking-wider">模型大厅</span>
+            <h2 class="text-3xl lg:text-4xl font-extrabold tracking-tight mt-2 mb-3">当前开放拼团的模型</h2>
+            <p class="text-ink-soft dark:text-gray-400 max-w-2xl mx-auto">定价直接来自后端 Pricing，管理端新增一条 pricing 即可自动展示。</p>
+          </div>
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="model-grid">${pricingHtml}</div>
+        </div>
+      </section>
+      <section id="docs-land" class="py-16 lg:py-20 bg-white dark:bg-[#0d1424]">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-12">
+            <span class="text-sm font-semibold text-brand uppercase tracking-wider">快速接入</span>
+            <h2 class="text-3xl lg:text-4xl font-extrabold tracking-tight mt-2 mb-3">三行代码接入</h2>
+            <p class="text-ink-soft dark:text-gray-400">完全兼容 OpenAI SDK，仅需修改 base_url 与 API Key。</p>
+          </div>
+          <div class="bg-[#0d1424] rounded-2xl overflow-hidden border border-gray-800">
+            <div class="flex items-center gap-2 px-5 py-3 border-b border-gray-800">
+              <div class="w-3 h-3 rounded-full bg-red-400"></div>
+              <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+              <div class="w-3 h-3 rounded-full bg-green-400"></div>
+              <span class="text-gray-500 text-sm ml-2 font-mono">base_url = window.origin + '/v1'</span>
+            </div>
+            <pre class="p-6 text-sm font-mono text-gray-300 overflow-x-auto"><code><span class="text-purple-400">from</span> openai <span class="text-purple-400">import</span> OpenAI
+
+client = OpenAI(
+    api_key=<span class="text-green-400">"${Auth.isLogged() ? 'sk-relay-<在控制台创建>' : '登录后可见'}"</span>,
+    base_url=<span class="text-green-400">"${window.location.origin}/v1"</span>
+)
+
+resp = client.chat.completions.create(
+    model=<span class="text-green-400">"deepseek-r1"</span>,
+    messages=[{<span class="text-green-400">"role"</span>: <span class="text-green-400">"user"</span>, <span class="text-green-400">"content"</span>: <span class="text-green-400">"你好"</span>}],
+)
+<span class="text-purple-400">print</span>(resp.choices[<span class="text-orange-400">0</span>].message.content)</code></pre>
+          </div>
+        </div>
+      </section>`;
+    document.getElementById('site-footer').hidden = false;
+  },
+
+  // ------------- User Console -------------
+  async console() {
+    if (!Auth.isLogged()) { toast('请先登录', 'warn'); navigate('/'); return; }
+    const app = document.getElementById('app');
+    document.getElementById('site-footer').hidden = true;
+    app.innerHTML = `
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-6 flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <div class="text-sm text-ink-faint dark:text-gray-500">用户控制台</div>
+            <h1 class="text-2xl font-extrabold mt-1">你好，${Auth._user.display_name || Auth._user.username} 👋</h1>
+            <p class="text-ink-soft dark:text-gray-400 text-sm mt-1">管理你的 API Key、额度与用量。</p>
+          </div>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl px-5 py-3">
+              <div class="text-xs text-ink-faint dark:text-gray-500">角色</div>
+              <div class="font-bold mt-1">${Auth._user.role === 'admin' ? '<span class="text-brand">管理员</span>' : '普通用户'}</div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl px-5 py-3">
+              <div class="text-xs text-ink-faint dark:text-gray-500">已用 / 额度 (token)</div>
+              <div class="font-bold mt-1">${fmtInt(Auth._user.used_quota)} / ${Auth._user.quota_limit < 0 ? '∞' : fmtInt(Auth._user.quota_limit)}</div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl px-5 py-3">
+              <div class="text-xs text-ink-faint dark:text-gray-500">注册时间</div>
+              <div class="font-bold mt-1">${fmtDate(Auth._user.created_at)}</div>
+            </div>
+          </div>
+        </div>
+        <!-- Tabs -->
+        <div class="bg-gray-100 dark:bg-gray-800 p-1 rounded-xl flex flex-wrap gap-1 mb-6" id="user-tabs">
+          <button data-tab="tokens" class="tab active px-4 py-2 rounded-lg text-sm font-medium text-ink-soft dark:text-gray-400 flex items-center gap-1.5"><svg class="w-4 h-4"><use href="#i-key"/></svg>我的 API Key</button>
+          <button data-tab="usage"  class="tab px-4 py-2 rounded-lg text-sm font-medium text-ink-soft dark:text-gray-400 flex items-center gap-1.5"><svg class="w-4 h-4"><use href="#i-chart"/></svg>用量记录</button>
+          <button data-tab="redeem" class="tab px-4 py-2 rounded-lg text-sm font-medium text-ink-soft dark:text-gray-400 flex items-center gap-1.5"><svg class="w-4 h-4"><use href="#i-gift"/></svg>兑换充值</button>
+        </div>
+        <div id="user-tab-content"></div>
+      </div>`;
+
+    app.querySelectorAll('#user-tabs .tab').forEach(b => b.onclick = () => {
+      app.querySelectorAll('#user-tabs .tab').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      renderUserTab(b.dataset.tab);
+    });
+    renderUserTab('tokens');
+  },
+
+  // ------------- Admin Dashboard -------------
+  async admin() {
+    if (!Auth.isLogged()) { toast('请先登录', 'warn'); navigate('/'); return; }
+    if (!Auth.isAdmin()) { toast('需要管理员权限', 'error'); navigate('/console'); return; }
+    const app = document.getElementById('app');
+    document.getElementById('site-footer').hidden = true;
+
+    const tabs = [
+      { k: 'overview', label: '概览', icon: 'i-dashboard' },
+      { k: 'channels', label: '渠道', icon: 'i-channel' },
+      { k: 'tokens', label: '令牌', icon: 'i-token' },
+      { k: 'users', label: '用户', icon: 'i-user' },
+      { k: 'groups', label: '分组', icon: 'i-layers' },
+      { k: 'pricing', label: '定价', icon: 'i-pricing' },
+      { k: 'redeem', label: '兑换码', icon: 'i-gift' },
+      { k: 'usage', label: '用量', icon: 'i-chart' },
+      { k: 'health', label: '健康', icon: 'i-shield' },
+    ];
+    const curTab = parseHash().query.tab || 'overview';
+
+    app.innerHTML = `
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-6 flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <div class="text-sm text-ink-faint dark:text-gray-500">管理后台</div>
+            <h1 class="text-2xl font-extrabold mt-1">管理员工作台</h1>
+            <p class="text-ink-soft dark:text-gray-400 text-sm mt-1">渠道 / 令牌 / 用户 / 分组 / 定价 / 兑换 / 用量 — 一站式管理。</p>
+          </div>
+        </div>
+        <div class="bg-gray-100 dark:bg-gray-800 p-1 rounded-xl flex flex-wrap gap-1 mb-6" id="admin-tabs">
+          ${tabs.map(t => `<button data-tab="${t.k}" class="tab ${curTab === t.k ? 'active' : ''} px-4 py-2 rounded-lg text-sm font-medium text-ink-soft dark:text-gray-400 flex items-center gap-1.5"><svg class="w-4 h-4"><use href="#${t.icon}"/></svg>${t.label}</button>`).join('')}
+        </div>
+        <div id="admin-tab-content"><div class="py-20 text-center text-ink-faint">加载中...</div></div>
+      </div>`;
+
+    app.querySelectorAll('#admin-tabs .tab').forEach(b => b.onclick = () => {
+      const { path } = parseHash();
+      navigate(`${path}?tab=${b.dataset.tab}`);
+    });
+
+    await renderAdminTab(curTab);
+  },
+};
+
+/* =========================================================
+   7. User tab renderers
+   ========================================================= */
+async function renderUserTab(tab) {
+  const root = document.getElementById('user-tab-content');
+  if (tab === 'tokens') {
+    const data = await API.get('/api/admin/tokens?page_size=200').catch(() => ({ items: [], total: 0 }));
+    // backend returns all tokens to admin; for user console, /api/* self-serve endpoints do not exist yet -> fall back to nothing
+    // Use backend GET /api/admin/tokens... with admin auth only. For users we need a user-scope API; until then show a "create" card via modal (admin endpoint will reject for non-admin)
+    root.innerHTML = `
+      <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-bold flex items-center gap-2"><svg class="w-5 h-5 text-brand"><use href="#i-key"/></svg>我的 API Key</h2>
+          <button onclick="createTokenForMe()" class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-brand text-white hover:bg-brand-dark flex items-center gap-1.5"><svg class="w-4 h-4"><use href="#i-plus"/></svg>新建 Key</button>
+        </div>
+        <div class="text-sm text-ink-soft dark:text-gray-400 mb-3">当前版本的用户控制台令牌列表将在后端补充 /api/tokens/my 接口后对接。</div>
+        <table class="w-full text-sm">
+          <thead class="text-ink-faint dark:text-gray-500"><tr>
+            <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">Key</th>
+            <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">名称</th>
+            <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">状态</th>
+            <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">额度</th>
+            <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">创建</th>
+          </tr></thead>
+          <tbody>
+            ${(data.items || []).filter(t => Auth.isAdmin() || t.user_id === Auth._user.id).map(t => `
+              <tr class="border-b last:border-0 border-gray-50 dark:border-gray-700/50">
+                <td class="py-3 pr-4 font-mono text-xs"><code class="px-2 py-1 rounded bg-gray-100 dark:bg-gray-900">${maskKey(t.key_hash || t.key_preview || t.key || t.id)}</code></td>
+                <td class="py-3 pr-4">${t.name}</td>
+                <td class="py-3 pr-4">${t.status === 1 ? '<span class="text-accent-green">启用</span>' : '<span class="text-accent-red">停用</span>'}</td>
+                <td class="py-3 pr-4">${fmtInt(t.used_quota)} / ${t.quota_limit < 0 ? '∞' : fmtInt(t.quota_limit)}</td>
+                <td class="py-3 pr-4 text-ink-faint dark:text-gray-500">${fmtDate(t.created_at)}</td>
+              </tr>`).join('') || `<tr><td colspan="5" class="py-10 text-center text-ink-faint">暂无数据</td></tr>`}
+          </tbody>
+        </table>
+      </div>`;
+  } else if (tab === 'usage') {
+    const data = await API.get('/api/usage/my?page_size=200').catch(() => ({ items: [], total: 0 }));
+    root.innerHTML = `
+      <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-5">
+        <h2 class="font-bold flex items-center gap-2 mb-4"><svg class="w-5 h-5 text-brand"><use href="#i-chart"/></svg>我的用量</h2>
+        <table class="w-full text-sm">
+          <thead class="text-ink-faint dark:text-gray-500"><tr>
+            <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">模型</th>
+            <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">Prompt</th>
+            <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">Completion</th>
+            <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">费用</th>
+            <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">状态</th>
+            <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">时间</th>
+          </tr></thead>
+          <tbody>
+            ${(data.items || []).map(u => `
+              <tr class="border-b last:border-0 border-gray-50 dark:border-gray-700/50">
+                <td class="py-3 pr-4 font-medium">${u.model}</td>
+                <td class="py-3 pr-4">${fmtInt(u.prompt_tokens)}</td>
+                <td class="py-3 pr-4">${fmtInt(u.completion_tokens)}</td>
+                <td class="py-3 pr-4">¥${fmtCost(u.cost)}</td>
+                <td class="py-3 pr-4">${u.status === 'success' ? '<span class="text-accent-green">成功</span>' : `<span class="text-accent-red">${u.status}</span>`}</td>
+                <td class="py-3 pr-4 text-ink-faint dark:text-gray-500">${fmtDate(u.created_at)}</td>
+              </tr>`).join('') || `<tr><td colspan="6" class="py-10 text-center text-ink-faint">暂无数据</td></tr>`}
+          </tbody>
+        </table>
+      </div>`;
+  } else if (tab === 'redeem') {
+    root.innerHTML = `
+      <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-5 max-w-xl">
+        <h2 class="font-bold flex items-center gap-2 mb-4"><svg class="w-5 h-5 text-brand"><use href="#i-gift"/></svg>使用兑换码</h2>
+        <form onsubmit="event.preventDefault(); redeemCode(this);" class="flex gap-2">
+          <input name="code" placeholder="REDEEM-XXXX-XXXX-XXXX-XXXX" class="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-brand focus:border-transparent outline-none font-mono text-sm" required>
+          <button class="px-5 py-2 rounded-xl bg-brand text-white font-semibold hover:bg-brand-dark">兑换</button>
+        </form>
+      </div>`;
+  }
+}
+
+async function createTokenForMe() {
+  openFormModal('新建 API Key',
+    field('令牌名称', 'name', { placeholder: '例如 My App' }) +
+    field('额度 (token，-1 不限)', 'quota_limit', { type: 'number', value: '-1' }),
+    async f => {
+      const fd = new FormData(f);
+      const body = { name: fd.get('name'), user_id: Auth._user.id, quota_limit: +fd.get('quota_limit') };
+      try {
+        const r = await API.post('/api/admin/tokens', body);
+        if (r.token) toast(`创建成功，保存好 Key：${r.token}`, 'ok', 8000);
+        else toast('已创建（后端未返回明文 key，建议扩展 create_token 返回）', 'warn', 6000);
+        closeModal();
+        renderUserTab('tokens');
+      } catch (e) {
+        toast(e.message || '创建失败：非管理员可能无权限', 'error');
+      }
+    }
+  );
+}
+async function redeemCode(form) {
+  const code = new FormData(form).get('code').trim();
+  try {
+    const r = await API.post('/api/redeem', { code });
+    toast(`兑换成功，已到账 ${r.quota ? r.quota.toLocaleString() : ''} token`, 'ok');
+    Auth._user = await Auth.me();
+    renderUserTab('usage');
+  } catch (e) {
+    toast(e.message || '兑换失败', 'error');
+  }
+}
+
+/* =========================================================
+   8. Admin tab renderers (full CRUD)
+   ========================================================= */
+async function renderAdminTab(tab) {
+  const root = document.getElementById('admin-tab-content');
+  if (tab === 'overview') return renderAdminOverview(root);
+  if (tab === 'channels') return renderAdminChannels(root);
+  if (tab === 'tokens')   return renderAdminTokens(root);
+  if (tab === 'users')    return renderAdminUsers(root);
+  if (tab === 'groups')   return renderAdminGroups(root);
+  if (tab === 'pricing')  return renderAdminPricing(root);
+  if (tab === 'redeem')   return renderAdminRedeem(root);
+  if (tab === 'usage')    return renderAdminUsage(root);
+  if (tab === 'health')   return renderAdminHealth(root);
+}
+
+async function renderAdminOverview(root) {
+  let stats = { total_tokens: 0, total_cost: 0, requests: 0, by_model: [], by_day: [] };
+  try { stats = await API.get('/api/admin/stats?days=30'); } catch(e) {}
+  try {
+    const chans = await API.get('/api/admin/channels?page_size=200');
+    const users = await API.get('/api/admin/users?page_size=1');
+    root.innerHTML = `
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        ${[
+          { label: '总请求数', value: fmtInt(stats.requests || 0), icon: 'i-bolt', tint: 'text-brand' },
+          { label: '总 Tokens', value: fmtInt(stats.total_tokens || 0), icon: 'i-cpu', tint: 'text-accent-purple' },
+          { label: '总费用', value: '¥' + fmtCost(stats.total_cost || 0), icon: 'i-receipt', tint: 'text-accent-amber' },
+          { label: '注册用户 / 渠道', value: `${users.total || 0} / ${chans.total || chans.items?.length || 0}`, icon: 'i-user', tint: 'text-accent-green' },
+        ].map(c => `
+          <div class="card-hover bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-5">
+            <div class="flex items-center justify-between">
+              <div class="text-sm text-ink-faint dark:text-gray-500">${c.label}</div>
+              <svg class="w-5 h-5 ${c.tint}"><use href="#${c.icon}"/></svg>
+            </div>
+            <div class="text-2xl font-extrabold mt-2">${c.value}</div>
+          </div>`).join('')}
+      </div>
+      <div class="grid lg:grid-cols-2 gap-6">
+        <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-5">
+          <h3 class="font-bold mb-3 flex items-center gap-2"><svg class="w-5 h-5 text-brand"><use href="#i-chart"/></svg>按模型 Token 消耗（Top 20）</h3>
+          <div class="space-y-2">
+            ${(stats.by_model || []).slice(0, 10).map(m => `
+              <div>
+                <div class="flex justify-between text-sm mb-1"><span class="font-medium">${m.key || '-'}</span><span class="text-ink-faint">${fmtInt(m.tokens)} 个 · ¥${fmtCost(m.cost)}</span></div>
+                <div class="h-2 rounded-full bg-gray-100 dark:bg-gray-700"><div class="h-full rounded-full bg-brand" style="width:${Math.min(100, ((m.tokens||0) / Math.max(1, (stats.by_model||[])[0]?.tokens || 1)) * 100)}%"></div></div>
+              </div>`).join('') || '<p class="text-sm text-ink-faint py-4 text-center">暂无数据</p>'}
+          </div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-5">
+          <h3 class="font-bold mb-3 flex items-center gap-2"><svg class="w-5 h-5 text-brand"><use href="#i-chart"/></svg>近 30 天（按日）</h3>
+          <div class="flex items-end gap-1 h-40 pt-4">
+            ${(stats.by_day || []).slice(-30).map(d => {
+              const h = Math.max(3, Math.min(100, ((d.tokens||0) / Math.max(1, ...(stats.by_day||[]).map(x=>x.tokens||0))) * 100));
+              return `<div class="flex-1 rounded-t bg-brand/60 hover:bg-brand transition relative group" style="height:${h}%" title="${d.key}: ${fmtInt(d.tokens)} tok / ¥${fmtCost(d.cost)}"></div>`;
+            }).join('') || '<p class="text-sm text-ink-faint py-4 text-center w-full">暂无数据</p>'}
+          </div>
+        </div>
+      </div>`;
+  } catch (e) { root.innerHTML = `<p class="text-accent-red py-10 text-center">加载失败：${e.message}</p>`; }
+}
+
+/* --- Channels --- */
+async function renderAdminChannels(root) {
+  const d = await API.get('/api/admin/channels?page_size=200');
+  root.innerHTML = `
+    <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold flex items-center gap-2"><svg class="w-5 h-5 text-brand"><use href="#i-channel"/></svg>渠道列表（${d.total ?? d.items?.length ?? 0}）</h2>
+        <div class="flex gap-2">
+          <button onclick="channelForm()" class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-brand text-white hover:bg-brand-dark flex items-center gap-1.5"><svg class="w-4 h-4"><use href="#i-plus"/></svg>新建渠道</button>
+          <button onclick="channelBatchForm()" class="px-3 py-1.5 rounded-lg text-sm font-medium border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-1.5">批量导入</button>
+        </div>
+      </div>
+      <table class="w-full text-sm">
+        <thead class="text-ink-faint dark:text-gray-500"><tr>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">ID</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">名称</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">类型</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">Base URL</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">模型</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">权重</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">状态</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700 text-right">操作</th>
+        </tr></thead>
+        <tbody>
+          ${(d.items || []).map(c => `
+            <tr class="border-b last:border-0 border-gray-50 dark:border-gray-700/50">
+              <td class="py-3 pr-4 text-ink-faint">#${c.id}</td>
+              <td class="py-3 pr-4 font-medium">${c.name}</td>
+              <td class="py-3 pr-4"><span class="px-2 py-0.5 rounded bg-brand/10 text-brand text-xs">${c.type}</span></td>
+              <td class="py-3 pr-4 text-ink-faint dark:text-gray-500 max-w-[240px] truncate">${c.base_url}</td>
+              <td class="py-3 pr-4 text-xs">${c.models || '-'}</td>
+              <td class="py-3 pr-4">P${c.priority} · W${c.weight}</td>
+              <td class="py-3 pr-4">${c.status === 1 ? '<span class="text-accent-green">启用</span>' : '<span class="text-accent-red">停用</span>'}</td>
+              <td class="py-3 pr-4 text-right">
+                <div class="inline-flex gap-1">
+                  <button onclick="channelForm(${JSON.stringify(c).replace(/"/g, '&quot;')})" class="p-1.5 rounded-md text-ink-soft hover:bg-gray-100 dark:hover:bg-gray-700" title="编辑"><svg class="w-4 h-4"><use href="#i-edit"/></svg></button>
+                  <button onclick="toggleChannelStatus(${c.id}, ${c.status === 1 ? 0 : 1})" class="p-1.5 rounded-md text-ink-soft hover:bg-gray-100 dark:hover:bg-gray-700" title="切换状态"><svg class="w-4 h-4"><use href="#i-warn"/></svg></button>
+                  <button onclick="deleteChannel(${c.id})" class="p-1.5 rounded-md text-accent-red hover:bg-accent-redL/40 dark:hover:bg-red-900/20" title="删除"><svg class="w-4 h-4"><use href="#i-trash"/></svg></button>
+                </div>
+              </td>
+            </tr>`).join('') || `<tr><td colspan="8" class="py-10 text-center text-ink-faint">暂无渠道，点右上角「新建渠道」添加一条。</td></tr>`}
+        </tbody>
+      </table>
+    </div>`;
+}
+function channelForm(c) {
+  const v = c || {};
+  openFormModal(c ? `编辑渠道 #${c.id}` : '新建渠道',
+    field('渠道名称', 'name', { value: v.name || '' }) +
+    `<div>
+      <label class="text-sm font-medium text-ink-soft dark:text-gray-400 mb-1.5 block">类型 <span class="text-accent-red">*</span></label>
+      <select name="type" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-ink dark:text-white focus:ring-2 focus:ring-brand outline-none text-sm">
+        ${['openai','anthropic','gemini','groq','deepseek','qwen','glm','kimi','ernie','mock'].map(t => `<option value="${t}" ${v.type===t?'selected':''}>${t}</option>`).join('')}
+      </select>
+    </div>` +
+    field('Base URL', 'base_url', { value: v.base_url || 'https://api.deepseek.com/v1', placeholder: 'https://api.openai.com/v1' }) +
+    `<div><label class="text-sm font-medium text-ink-soft dark:text-gray-400 mb-1.5 block">API Key ${c ? '（留空不修改）' : '<span class="text-accent-red">*</span>'}</label><input name="api_key" type="password" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-ink dark:text-white focus:ring-2 focus:ring-brand outline-none text-sm" placeholder="${c ? 'sk-**** (留空不改)' : 'sk-...'}" ${c ? '' : 'required'}></div>` +
+    field('模型列表 (逗号分隔)', 'models', { value: v.models || '', required: false, placeholder: 'deepseek-r1,deepseek-chat' }) +
+    field('模型映射 JSON', 'model_mapping', { value: v.model_mapping || '{}', required: false }) +
+    `<div class="grid grid-cols-3 gap-3">
+      ${field('优先级', 'priority', { type: 'number', value: v.priority ?? 0 })}
+      ${field('权重', 'weight', { type: 'number', value: v.weight ?? 1 })}
+      ${field('分组 ID', 'group_ids', { value: v.group_ids || '1' })}
+    </div>
+    <div class="grid grid-cols-3 gap-3">
+      ${field('状态(1启用/0停用)', 'status', { type: 'number', value: v.status ?? 1 })}
+      ${field('自动熔断', 'auto_ban', { type: 'number', value: v.auto_ban ?? 1 })}
+      ${field('超时(ms)', 'timeout_ms', { type: 'number', value: v.timeout_ms ?? 60000 })}
+    </div>`,
+    async f => {
+      const fd = Object.fromEntries(new FormData(f).entries());
+      ['priority','weight','status','auto_ban'].forEach(k => fd[k] = +fd[k]);
+      fd.timeout_ms = +fd.timeout_ms;
+      try {
+        const r = c ? (await API.put(`/api/admin/channels/${c.id}`, fd)) : (await API.post('/api/admin/channels', fd));
+        toast(c ? '已更新' : `已创建 #${r.id}`, 'ok');
+        closeModal(); renderAdminTab('channels');
+      } catch (e) { toast(e.message || '保存失败', 'error'); }
+    }
+  );
+}
+function channelBatchForm() {
+  openFormModal('批量导入渠道（JSON 数组）',
+    `<div>
+      <label class="text-sm font-medium text-ink-soft dark:text-gray-400 mb-1.5 block">JSON 数组 <span class="text-accent-red">*</span></label>
+      <textarea id="batch_json" rows="10" required placeholder='[{"name":"","type":"openai","base_url":"","api_key":"sk-","models":""}]' class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 font-mono text-xs focus:ring-2 focus:ring-brand outline-none"></textarea>
+    </div>`,
+    async f => {
+      try {
+        const items = JSON.parse(document.getElementById('batch_json').value);
+        if (!Array.isArray(items)) throw new Error('必须是 JSON 数组');
+        const r = await API.post('/api/admin/channels/batch', items);
+        toast(`成功 ${r.success} / 失败 ${r.failed?.length || 0}`, 'ok');
+        closeModal(); renderAdminTab('channels');
+      } catch (e) { toast(e.message || 'JSON 解析失败', 'error'); }
+    }
+  );
+}
+async function toggleChannelStatus(id, status) {
+  try { await API.put(`/api/admin/channels/${id}/status`, { status }); toast('已切换状态', 'ok'); renderAdminTab('channels'); }
+  catch (e) { toast(e.message, 'error'); }
+}
+async function deleteChannel(id) {
+  if (!confirm('确认删除该渠道？')) return;
+  try { await API.del(`/api/admin/channels/${id}`); toast('已删除', 'ok'); renderAdminTab('channels'); }
+  catch (e) { toast(e.message, 'error'); }
+}
+
+/* --- Tokens --- */
+async function renderAdminTokens(root) {
+  const d = await API.get('/api/admin/tokens?page_size=200');
+  root.innerHTML = `
+    <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold flex items-center gap-2"><svg class="w-5 h-5 text-brand"><use href="#i-token"/></svg>令牌列表（${d.total ?? d.items?.length ?? 0}）</h2>
+        <button onclick="tokenForm()" class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-brand text-white hover:bg-brand-dark flex items-center gap-1.5"><svg class="w-4 h-4"><use href="#i-plus"/></svg>新建令牌</button>
+      </div>
+      <table class="w-full text-sm">
+        <thead class="text-ink-faint dark:text-gray-500"><tr>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">ID</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">名称</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">用户</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">Key</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">额度</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">状态</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700 text-right">操作</th>
+        </tr></thead>
+        <tbody>
+          ${(d.items || []).map(t => `
+            <tr class="border-b last:border-0 border-gray-50 dark:border-gray-700/50">
+              <td class="py-3 pr-4 text-ink-faint">#${t.id}</td>
+              <td class="py-3 pr-4 font-medium">${t.name}</td>
+              <td class="py-3 pr-4">UID ${t.user_id}</td>
+              <td class="py-3 pr-4 font-mono text-xs"><code class="px-2 py-1 rounded bg-gray-100 dark:bg-gray-900">${maskKey(t.key_preview || t.key_hash)}</code></td>
+              <td class="py-3 pr-4">${fmtInt(t.used_quota)} / ${t.quota_limit < 0 ? '∞' : fmtInt(t.quota_limit)}</td>
+              <td class="py-3 pr-4">${t.status === 1 ? '<span class="text-accent-green">启用</span>' : '<span class="text-accent-red">停用</span>'}</td>
+              <td class="py-3 pr-4 text-right">
+                <div class="inline-flex gap-1">
+                  <button onclick="tokenForm(${JSON.stringify(t).replace(/"/g, '&quot;')})" class="p-1.5 rounded-md text-ink-soft hover:bg-gray-100 dark:hover:bg-gray-700"><svg class="w-4 h-4"><use href="#i-edit"/></svg></button>
+                  <button onclick="toggleTokenStatus(${t.id}, ${t.status === 1 ? 0 : 1})" class="p-1.5 rounded-md text-ink-soft hover:bg-gray-100 dark:hover:bg-gray-700"><svg class="w-4 h-4"><use href="#i-warn"/></svg></button>
+                  <button onclick="deleteToken(${t.id})" class="p-1.5 rounded-md text-accent-red hover:bg-accent-redL/40 dark:hover:bg-red-900/20"><svg class="w-4 h-4"><use href="#i-trash"/></svg></button>
+                </div>
+              </td>
+            </tr>`).join('') || `<tr><td colspan="7" class="py-10 text-center text-ink-faint">暂无数据</td></tr>`}
+        </tbody>
+      </table>
+    </div>`;
+}
+function tokenForm(t) {
+  const v = t || {};
+  openFormModal(t ? `编辑令牌 #${t.id}` : '新建令牌',
+    field('令牌名', 'name', { value: v.name || '' }) +
+    field('用户 ID', 'user_id', { type: 'number', value: v.user_id ?? Auth._user.id }) +
+    field('额度（-1 不限）', 'quota_limit', { type: 'number', value: v.quota_limit ?? -1 }) +
+    (t ? field('状态(1/0)', 'status', { type: 'number', value: v.status ?? 1 }) : ''),
+    async f => {
+      const fd = Object.fromEntries(new FormData(f).entries());
+      fd.user_id = +fd.user_id; fd.quota_limit = +fd.quota_limit; if (t) fd.status = +fd.status;
+      try {
+        const r = t ? (await API.put(`/api/admin/tokens/${t.id}`, fd)) : (await API.post('/api/admin/tokens', fd));
+        if (r.token) toast(`创建成功，密钥仅出现一次：${r.token}`, 'ok', 10000);
+        else toast(t ? '已更新' : '已创建', 'ok');
+        closeModal(); renderAdminTab('tokens');
+      } catch (e) { toast(e.message || '保存失败', 'error'); }
+    }
+  );
+}
+async function toggleTokenStatus(id, status) {
+  try { await API.put(`/api/admin/tokens/${id}/status`, { status }); toast('已切换', 'ok'); renderAdminTab('tokens'); }
+  catch (e) { toast(e.message, 'error'); }
+}
+async function deleteToken(id) {
+  if (!confirm('确认删除？')) return;
+  try { await API.del(`/api/admin/tokens/${id}`); toast('已删除', 'ok'); renderAdminTab('tokens'); }
+  catch (e) { toast(e.message, 'error'); }
+}
+
+/* --- Users --- */
+async function renderAdminUsers(root) {
+  const d = await API.get('/api/admin/users?page_size=200');
+  root.innerHTML = `
+    <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold flex items-center gap-2"><svg class="w-5 h-5 text-brand"><use href="#i-user"/></svg>用户列表（${d.total ?? d.items?.length ?? 0}）</h2>
+        <button onclick="userForm()" class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-brand text-white hover:bg-brand-dark flex items-center gap-1.5"><svg class="w-4 h-4"><use href="#i-plus"/></svg>新建用户</button>
+      </div>
+      <table class="w-full text-sm">
+        <thead class="text-ink-faint dark:text-gray-500"><tr>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">ID</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">用户名</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">角色</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">组</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">额度</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">状态</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700 text-right">操作</th>
+        </tr></thead>
+        <tbody>
+          ${(d.items || []).map(u => `
+            <tr class="border-b last:border-0 border-gray-50 dark:border-gray-700/50">
+              <td class="py-3 pr-4 text-ink-faint">#${u.id}</td>
+              <td class="py-3 pr-4 font-medium">${u.username} <span class="text-ink-faint text-xs ml-1">${u.display_name || ''}</span></td>
+              <td class="py-3 pr-4">${u.role === 'admin' ? '<span class="px-2 py-0.5 rounded bg-brand/10 text-brand text-xs">管理员</span>' : '普通'}</td>
+              <td class="py-3 pr-4">G#${u.group_id}</td>
+              <td class="py-3 pr-4">${fmtInt(u.used_quota)} / ${u.quota_limit < 0 ? '∞' : fmtInt(u.quota_limit)}</td>
+              <td class="py-3 pr-4">${u.status === 1 ? '<span class="text-accent-green">启用</span>' : '<span class="text-accent-red">停用</span>'}</td>
+              <td class="py-3 pr-4 text-right">
+                <div class="inline-flex gap-1">
+                  <button onclick="userForm(${JSON.stringify(u).replace(/"/g, '&quot;')})" class="p-1.5 rounded-md text-ink-soft hover:bg-gray-100 dark:hover:bg-gray-700"><svg class="w-4 h-4"><use href="#i-edit"/></svg></button>
+                  <button onclick="deleteUser(${u.id})" class="p-1.5 rounded-md text-accent-red hover:bg-accent-redL/40 dark:hover:bg-red-900/20"><svg class="w-4 h-4"><use href="#i-trash"/></svg></button>
+                </div>
+              </td>
+            </tr>`).join('') || `<tr><td colspan="7" class="py-10 text-center text-ink-faint">暂无数据</td></tr>`}
+        </tbody>
+      </table>
+    </div>`;
+}
+function userForm(u) {
+  const v = u || {};
+  openFormModal(u ? `编辑用户 #${u.id}` : '新建用户',
+    field('用户名', 'username', { value: v.username || '' }) +
+    (u ? '' : field('初始密码 (>=8位)', 'password', { type: 'password', placeholder: 'Admin@123' })) +
+    field('显示名', 'display_name', { value: v.display_name || '', required: false }) +
+    `<div class="grid grid-cols-2 gap-3">
+      <div><label class="text-sm font-medium text-ink-soft dark:text-gray-400 mb-1.5 block">角色</label>
+        <select name="role" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-sm outline-none focus:ring-2 focus:ring-brand">
+          <option value="user" ${v.role==='user'?'selected':''}>普通用户</option>
+          <option value="admin" ${v.role==='admin'?'selected':''}>管理员</option>
+        </select>
+      </div>
+      ${field('分组 ID', 'group_id', { type: 'number', value: v.group_id ?? 1 })}
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      ${field('额度（-1不限）', 'quota_limit', { type: 'number', value: v.quota_limit ?? -1 })}
+      ${field('状态 (1/0)', 'status', { type: 'number', value: v.status ?? 1 })}
+    </div>`,
+    async f => {
+      const fd = Object.fromEntries(new FormData(f).entries());
+      fd.group_id = +fd.group_id; fd.quota_limit = +fd.quota_limit; fd.status = +fd.status;
+      try {
+        if (u) await API.put(`/api/admin/users/${u.id}`, fd);
+        else   await API.post('/api/admin/users', fd);
+        toast(u ? '已更新' : '已创建', 'ok');
+        closeModal(); renderAdminTab('users');
+      } catch (e) { toast(e.message, 'error'); }
+    }
+  );
+}
+async function deleteUser(id) {
+  if (!confirm('确认删除该用户？')) return;
+  try { await API.del(`/api/admin/users/${id}`); toast('已删除', 'ok'); renderAdminTab('users'); }
+  catch (e) { toast(e.message, 'error'); }
+}
+
+/* --- Groups --- */
+async function renderAdminGroups(root) {
+  const d = await API.get('/api/admin/groups');
+  root.innerHTML = `
+    <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold flex items-center gap-2"><svg class="w-5 h-5 text-brand"><use href="#i-layers"/></svg>用户分组（${d.items?.length || 0}）</h2>
+        <button onclick="groupForm()" class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-brand text-white hover:bg-brand-dark flex items-center gap-1.5"><svg class="w-4 h-4"><use href="#i-plus"/></svg>新建分组</button>
+      </div>
+      <table class="w-full text-sm">
+        <thead class="text-ink-faint dark:text-gray-500"><tr>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">ID</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">名称</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">倍率</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">备注</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700 text-right">操作</th>
+        </tr></thead>
+        <tbody>
+          ${(d.items || []).map(g => `
+            <tr class="border-b last:border-0 border-gray-50 dark:border-gray-700/50">
+              <td class="py-3 pr-4 text-ink-faint">#${g.id}</td>
+              <td class="py-3 pr-4 font-medium">${g.name}</td>
+              <td class="py-3 pr-4">${g.quota_multiplier}x</td>
+              <td class="py-3 pr-4 text-ink-faint dark:text-gray-500">${g.remark || '-'}</td>
+              <td class="py-3 pr-4 text-right">
+                <div class="inline-flex gap-1">
+                  <button onclick="groupForm(${JSON.stringify(g).replace(/"/g, '&quot;')})" class="p-1.5 rounded-md text-ink-soft hover:bg-gray-100 dark:hover:bg-gray-700"><svg class="w-4 h-4"><use href="#i-edit"/></svg></button>
+                  <button onclick="deleteGroup(${g.id})" class="p-1.5 rounded-md text-accent-red hover:bg-accent-redL/40 dark:hover:bg-red-900/20"><svg class="w-4 h-4"><use href="#i-trash"/></svg></button>
+                </div>
+              </td>
+            </tr>`).join('') || `<tr><td colspan="5" class="py-10 text-center text-ink-faint">暂无数据</td></tr>`}
+        </tbody>
+      </table>
+    </div>`;
+}
+function groupForm(g) {
+  const v = g || {};
+  openFormModal(g ? `编辑分组 #${g.id}` : '新建分组',
+    field('名称', 'name', { value: v.name || '' }) +
+    field('倍率 (例如 1.0 / 0.8 / 1.5)', 'quota_multiplier', { type: 'number', step: '0.01', value: v.quota_multiplier ?? 1.0 }) +
+    field('备注', 'remark', { value: v.remark || '', required: false }),
+    async f => {
+      const fd = Object.fromEntries(new FormData(f).entries());
+      fd.quota_multiplier = parseFloat(fd.quota_multiplier);
+      try {
+        if (g) await API.put(`/api/admin/groups/${g.id}`, fd);
+        else   await API.post('/api/admin/groups', fd);
+        toast(g ? '已更新' : '已创建', 'ok'); closeModal(); renderAdminTab('groups');
+      } catch (e) { toast(e.message, 'error'); }
+    }
+  );
+}
+async function deleteGroup(id) {
+  if (!confirm('确认删除？id=1 为默认组请勿删')) return;
+  try { await API.del(`/api/admin/groups/${id}`); toast('已删除', 'ok'); renderAdminTab('groups'); }
+  catch (e) { toast(e.message, 'error'); }
+}
+
+/* --- Pricing --- */
+async function renderAdminPricing(root) {
+  const d = await API.get('/api/admin/pricing');
+  root.innerHTML = `
+    <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold flex items-center gap-2"><svg class="w-5 h-5 text-brand"><use href="#i-pricing"/></svg>模型定价（${d.items?.length || 0}）</h2>
+        <button onclick="pricingForm()" class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-brand text-white hover:bg-brand-dark flex items-center gap-1.5"><svg class="w-4 h-4"><use href="#i-plus"/></svg>新增 / 覆盖</button>
+      </div>
+      <p class="text-xs text-ink-faint dark:text-gray-500 mb-3">单位：元 / 1,000,000 tokens。Upsert 语义：同一模型会覆盖。</p>
+      <table class="w-full text-sm">
+        <thead class="text-ink-faint dark:text-gray-500"><tr>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">ID</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">模型</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">Prompt / 1M</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">Completion / 1M</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700 text-right">操作</th>
+        </tr></thead>
+        <tbody>
+          ${(d.items || []).map(p => `
+            <tr class="border-b last:border-0 border-gray-50 dark:border-gray-700/50">
+              <td class="py-3 pr-4 text-ink-faint">#${p.id}</td>
+              <td class="py-3 pr-4 font-mono font-medium">${p.model}</td>
+              <td class="py-3 pr-4">¥${fmtCost(p.prompt_price*1_000_000)}</td>
+              <td class="py-3 pr-4">¥${fmtCost(p.completion_price*1_000_000)}</td>
+              <td class="py-3 pr-4 text-right">
+                <div class="inline-flex gap-1">
+                  <button onclick="pricingForm(${JSON.stringify(p).replace(/"/g, '&quot;')})" class="p-1.5 rounded-md text-ink-soft hover:bg-gray-100 dark:hover:bg-gray-700"><svg class="w-4 h-4"><use href="#i-edit"/></svg></button>
+                  <button onclick="deletePricing(${p.id})" class="p-1.5 rounded-md text-accent-red hover:bg-accent-redL/40 dark:hover:bg-red-900/20"><svg class="w-4 h-4"><use href="#i-trash"/></svg></button>
+                </div>
+              </td>
+            </tr>`).join('') || `<tr><td colspan="5" class="py-10 text-center text-ink-faint">暂无定价</td></tr>`}
+        </tbody>
+      </table>
+    </div>`;
+}
+function pricingForm(p) {
+  const v = p || {};
+  openFormModal(p ? `修改 #${p.id} 定价` : '新增 / 覆盖定价',
+    field('模型名', 'model', { value: v.model || '', placeholder: 'deepseek-r1' }) +
+    field('Prompt 单价（元/M tokens，输入 28 填 28）', 'prompt_price_per_m', { type: 'number', step: '0.0001', value: (v.prompt_price * 1_000_000).toFixed(6) }) +
+    field('Completion 单价（元/M tokens）', 'completion_price_per_m', { type: 'number', step: '0.0001', value: (v.completion_price * 1_000_000).toFixed(6) }),
+    async f => {
+      const fd = Object.fromEntries(new FormData(f).entries());
+      const body = {
+        model: fd.model,
+        prompt_price: +fd.prompt_price_per_m / 1_000_000,
+        completion_price: +fd.completion_price_per_m / 1_000_000,
+      };
+      if (v.id) body.id = v.id;
+      try {
+        await API.post('/api/admin/pricing', body);
+        toast('已保存', 'ok'); closeModal(); renderAdminTab('pricing');
+      } catch (e) { toast(e.message, 'error'); }
+    }
+  );
+}
+async function deletePricing(id) {
+  if (!confirm('确认删除？')) return;
+  try { await API.del(`/api/admin/pricing/${id}`); toast('已删除', 'ok'); renderAdminTab('pricing'); }
+  catch (e) { toast(e.message, 'error'); }
+}
+
+/* --- Redeem --- */
+async function renderAdminRedeem(root) {
+  const d = await API.get('/api/admin/redeem?page_size=200');
+  root.innerHTML = `
+    <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-5">
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <h2 class="font-bold flex items-center gap-2"><svg class="w-5 h-5 text-brand"><use href="#i-gift"/></svg>兑换码（${d.total ?? d.items?.length ?? 0}）</h2>
+        <div class="flex gap-2">
+          <button onclick="redeemBatchForm()" class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-brand text-white hover:bg-brand-dark flex items-center gap-1.5"><svg class="w-4 h-4"><use href="#i-plus"/></svg>批量生成</button>
+        </div>
+      </div>
+      <table class="w-full text-sm">
+        <thead class="text-ink-faint dark:text-gray-500"><tr>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">Code</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">额度 (tokens)</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">状态</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">使用者</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">创建</th>
+          <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700 text-right">操作</th>
+        </tr></thead>
+        <tbody>
+          ${(d.items || []).map(r => `
+            <tr class="border-b last:border-0 border-gray-50 dark:border-gray-700/50">
+              <td class="py-3 pr-4 font-mono text-xs"><code class="px-2 py-1 rounded bg-gray-100 dark:bg-gray-900">${r.code}</code></td>
+              <td class="py-3 pr-4">${fmtInt(r.quota)}</td>
+              <td class="py-3 pr-4">${r.status === 0 ? '<span class="text-accent-green">未用</span>' : '<span class="text-accent-amber">已用</span>'}</td>
+              <td class="py-3 pr-4">${r.used_by ? ('UID ' + r.used_by + (r.used_at ? ' @ ' + fmtDate(r.used_at) : '')) : '-'}</td>
+              <td class="py-3 pr-4 text-ink-faint dark:text-gray-500">${fmtDate(r.created_at)}</td>
+              <td class="py-3 pr-4 text-right">
+                <button onclick="toggleRedeem(${r.id}, ${r.status === 0 ? 1 : 0})" class="p-1.5 rounded-md text-ink-soft hover:bg-gray-100 dark:hover:bg-gray-700" title="禁用/启用"><svg class="w-4 h-4"><use href="#i-warn"/></svg></button>
+              </td>
+            </tr>`).join('') || `<tr><td colspan="6" class="py-10 text-center text-ink-faint">暂无数据</td></tr>`}
+        </tbody>
+      </table>
+    </div>`;
+}
+function redeemBatchForm() {
+  openFormModal('批量生成兑换码',
+    `<div class="grid grid-cols-2 gap-3">
+      ${field('数量 (1-100)', 'count', { type: 'number', value: '10' })}
+      ${field('额度 (tokens/个)', 'quota', { type: 'number', value: '1000000' })}
+    </div>
+    ${field('备注（可选）', 'remark', { value: '', required: false })}`,
+    async f => {
+      const fd = Object.fromEntries(new FormData(f).entries());
+      fd.count = +fd.count; fd.quota = +fd.quota;
+      try {
+        const r = await API.post('/api/admin/redeem', fd);
+        const n = r.codes ? r.codes.length : (r.success_count || 0);
+        toast(`成功生成 ${n} 个`, 'ok', 6000);
+        closeModal(); renderAdminTab('redeem');
+      } catch (e) { toast(e.message, 'error'); }
+    }
+  );
+}
+async function toggleRedeem(id, status) {
+  try { await API.put(`/api/admin/redeem/${id}/status`, { status }); toast('已切换', 'ok'); renderAdminTab('redeem'); }
+  catch (e) { toast(e.message, 'error'); }
+}
+
+/* --- Usage --- */
+async function renderAdminUsage(root) {
+  const d = await API.get('/api/admin/usage?page_size=100');
+  root.innerHTML = `
+    <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold flex items-center gap-2"><svg class="w-5 h-5 text-brand"><use href="#i-chart"/></svg>用量日志（最近 100 条）</h2>
+        <div class="text-sm text-ink-faint">共 ${d.total ?? d.items?.length ?? 0} 条</div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="text-ink-faint dark:text-gray-500 whitespace-nowrap"><tr>
+            <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">时间</th>
+            <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">用户</th>
+            <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">模型</th>
+            <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">Prompt</th>
+            <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">Compl.</th>
+            <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">费用</th>
+            <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">延迟</th>
+            <th class="py-2 pr-4 border-b border-gray-100 dark:border-gray-700">状态</th>
+          </tr></thead>
+          <tbody>
+            ${(d.items || []).map(u => `
+              <tr class="border-b last:border-0 border-gray-50 dark:border-gray-700/50 whitespace-nowrap">
+                <td class="py-3 pr-4 text-ink-faint">${fmtDate(u.created_at)}</td>
+                <td class="py-3 pr-4">U#${u.user_id} · T#${u.token_id}</td>
+                <td class="py-3 pr-4 font-medium">${u.model}</td>
+                <td class="py-3 pr-4">${fmtInt(u.prompt_tokens)}</td>
+                <td class="py-3 pr-4">${fmtInt(u.completion_tokens)}</td>
+                <td class="py-3 pr-4">¥${fmtCost(u.cost)}</td>
+                <td class="py-3 pr-4">${u.latency_ms || 0} ms</td>
+                <td class="py-3 pr-4">${u.status === 'success' ? '<span class="text-accent-green">成功</span>' : `<span class="text-accent-red">${u.status}</span>${u.error ? '<br><span class="text-xs">' + u.error.slice(0, 40) + '</span>' : ''}`}</td>
+              </tr>`).join('') || `<tr><td colspan="8" class="py-10 text-center text-ink-faint">暂无数据</td></tr>`}
+          </tbody>
+        </table>
       </div>
     </div>`;
-  }).join('');
 }
-renderModels();
+
+/* --- Health --- */
+async function renderAdminHealth(root) {
+  let h; try { h = await API.get('/api/admin/health'); } catch(e) { h = { error: e.message }; }
+  root.innerHTML = `
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-5">
+        <h2 class="font-bold flex items-center gap-2 mb-4"><svg class="w-5 h-5 text-brand"><use href="#i-shield"/></svg>健康报告</h2>
+        <pre class="text-xs font-mono bg-gray-50 dark:bg-gray-900 rounded-xl p-4 overflow-auto max-h-96">${JSON.stringify(h, null, 2)}</pre>
+      </div>
+      <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-5">
+        <h2 class="font-bold flex items-center gap-2 mb-4"><svg class="w-5 h-5 text-brand"><use href="#i-warn"/></svg>自检提示</h2>
+        <ul class="space-y-3 text-sm text-ink-soft dark:text-gray-400">
+          <li class="flex gap-2"><svg class="w-5 h-5 text-accent-green flex-shrink-0"><use href="#i-check"/></svg>启动自检：配置 / DB 完整性 / 默认分组 3 项均通过。</li>
+          <li class="flex gap-2"><svg class="w-5 h-5 text-accent-amber flex-shrink-0"><use href="#i-warn"/></svg>可用渠道为 0 时，/v1/chat/completions 无法转发，请先在「渠道」页添加。</li>
+          <li class="flex gap-2"><svg class="w-5 h-5 text-accent-amber flex-shrink-0"><use href="#i-warn"/></svg>Pricing 为空时首页模型大厅不显示卡片，请先在「定价」添加。</li>
+          <li class="flex gap-2"><svg class="w-5 h-5 text-accent-amber flex-shrink-0"><use href="#i-warn"/></svg>验证码已禁用（RELAY_DISABLE_CAPTCHA=1）；生产环境建议开启。</li>
+        </ul>
+      </div>
+    </div>`;
+}
+
+/* =========================================================
+   9. Router entry + boot
+   ========================================================= */
+async function router() {
+  const { path, query } = parseHash();
+  renderNav();
+  let view = 'home';
+  if (path === '/' || path === '') view = 'home';
+  else if (path === '/console') view = 'console';
+  else if (path.startsWith('/admin')) view = 'admin';
+  else { navigate('/'); return; }
+
+  try {
+    if (view === 'home')    await Views.home();
+    if (view === 'console') await Views.console();
+    if (view === 'admin')   await Views.admin();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch (e) {
+    toast('页面加载失败: ' + e.message, 'error');
+    console.error(e);
+  }
+}
+
+window.addEventListener('hashchange', router);
+(async function boot() {
+  try { await Auth.me(); } catch (_) { /* not logged */ }
+  renderNav();
+  if (!location.hash) location.hash = '/';
+  router();
+})();
 </script>
 </body>
 </html>

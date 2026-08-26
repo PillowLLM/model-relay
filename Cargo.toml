@@ -1,0 +1,49 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/relay-core",
+    "crates/relay-store",
+    "crates/relay-provider",
+    "crates/relay-autofit",
+    "crates/relay-billing",
+    "crates/relay-gateway",
+    "crates/relay-health",
+    "crates/relay-api",
+    "crates/relay-server",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[workspace.dependencies]
+relay-core = { path = "crates/relay-core" }
+relay-store = { path = "crates/relay-store" }
+relay-provider = { path = "crates/relay-provider" }
+relay-autofit = { path = "crates/relay-autofit" }
+relay-billing = { path = "crates/relay-billing" }
+relay-gateway = { path = "crates/relay-gateway" }
+relay-health = { path = "crates/relay-health" }
+relay-api = { path = "crates/relay-api" }
+
+axum = { version = "0.8", features = ["macros"] }
+tokio = { version = "1", features = ["full"] }
+rusqlite = { version = "0.32", features = ["bundled"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", default-features = false, features = ["json", "stream", "rustls-tls"] }
+tower-http = { version = "0.6", features = ["fs", "cors", "trace"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+chrono = { version = "0.4", features = ["clock"] }
+scrypt = "0.11"
+sha2 = "0.10"
+base64 = "0.22"
+rand = "0.8"
+async-trait = "0.1"
+thiserror = "1"
+futures = "0.3"
+aes-gcm = "0.10"
+uuid = { version = "1", features = ["v4"] }
+http = "1"

@@ -1,9 +1,33 @@
-/target
-frontend/node_modules
-/data
-public/uploads
-public/js/*.map
-.env*
-*.log
+# Rust / Cargo
+/target/
+**/target/
+Cargo.lock.bak
+# Relay runtime data
+/data/
+*.db
+*.db-shm
+*.db-wal
+/uploads/
+.env
+.env.*
+!.env.example
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+# OS
 .DS_Store
 Thumbs.db
+# Node / frontend (if any)
+node_modules/
+dist/
+build/
+frontend/dist/
+public/dist/
+# Logs
+*.log
+# Backups
+*.backup
+*.bak
+backup-*.db

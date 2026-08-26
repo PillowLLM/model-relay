@@ -1,0 +1,9 @@
+[package]
+name = "relay-billing"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+relay-core = { workspace = true }
+relay-store = { workspace = true }
+tracing = { workspace = true }

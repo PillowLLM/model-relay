@@ -1,0 +1,22 @@
+[package]
+name = "relay-api"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+relay-core = { workspace = true }
+relay-store = { workspace = true }
+relay-provider = { workspace = true }
+relay-autofit = { workspace = true }
+relay-billing = { workspace = true }
+relay-gateway = { workspace = true }
+relay-health = { workspace = true }
+axum = { workspace = true }
+tokio = { workspace = true }
+tower-http = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+futures = { workspace = true }
+http = { workspace = true }
+rand = { workspace = true }

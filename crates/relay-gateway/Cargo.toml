@@ -1,0 +1,18 @@
+[package]
+name = "relay-gateway"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+relay-core = { workspace = true }
+relay-store = { workspace = true }
+relay-provider = { workspace = true }
+relay-autofit = { workspace = true }
+relay-billing = { workspace = true }
+relay-health = { workspace = true }
+http = { workspace = true }
+futures = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true }

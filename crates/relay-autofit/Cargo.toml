@@ -1,0 +1,10 @@
+[package]
+name = "relay-autofit"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+relay-core = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+http = { workspace = true }

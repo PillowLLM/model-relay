@@ -96,6 +96,48 @@ pub struct LoginReq {
     pub captcha: String,
 }
 
+#[derive(Deserialize)]
+pub struct RegisterReq {
+    pub username: String,
+    pub password: String,
+    #[serde(default)]
+    pub display_name: Option<String>,
+    #[serde(default)]
+    pub email: Option<String>,
+}
+
+/// POST /api/auth/register（匿名自助注册，强制普通用户角色）
+pub async fn register(State(state): State<AppState>, Json(req): Json<RegisterReq>) -> ApiResult<Json<serde_json::Value>> {
+    let username = req.username.trim();
+    if username.is_empty() {
+        return Err(AppError::bad_request("username 必填").into());
+    }
+    if req.password.len() < 8 {
+        return Err(AppError::bad_request("password 至少 8 位").into());
+    }
+    // 用户名唯一
+    if state.store.get_user_by_username(username)?.is_some() {
+        return Err(AppError::bad_request("用户名已存在").into());
+    }
+    let now = relay_core::util::now_str();
+    let u = User {
+        id: 0,
+        username: username.to_string(),
+        password_hash: crypto::hash_password(&req.password),
+        display_name: req.display_name.unwrap_or_else(|| username.to_string()),
+        email: req.email.unwrap_or_default(),
+        phone: String::new(),
+        role: "user".to_string(), // 自助注册一律普通用户，防止越权
+        group_id: 1,
+        quota_limit: -1,
+        used_quota: 0,
+        status: 1,
+        created_at: now,
+    };
+    let id = state.store.create_user(&u)?;
+    Ok(Json(json!({ "id": id, "username": u.username, "role": u.role })))
+}
+
 /// POST /api/auth/login
 pub async fn login(State(state): State<AppState>, Json(req): Json<LoginReq>) -> ApiResult<Response> {
     // 验证码

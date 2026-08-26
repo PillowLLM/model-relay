@@ -41,6 +41,7 @@ pub fn router(state: AppState) -> Router {
         .route("/v1/dashboard/billing/usage", get(v1::billing_usage))
         // 认证
         .route("/api/auth/captcha", get(captcha::get_captcha))
+        .route("/api/auth/register", post(auth::register))
         .route("/api/auth/login", post(auth::login))
         .route("/api/auth/logout", post(auth::logout))
         .route("/api/auth/me", get(auth::me).put(auth::update_me))

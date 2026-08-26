@@ -288,26 +288,55 @@ function renderNav() {
 /* =========================================================
    5. Modals: Login / Channel Edit / Token Create / User Edit / Pricing / Redeem
    ========================================================= */
-function openLoginModal() {
+let authMode = 'login'; // 'login' | 'register'
+function openLoginModal(mode = 'login') {
+  authMode = mode;
+  renderAuthModal();
+  maybeLoadCaptcha();
+}
+function renderAuthModal() {
+  const isLogin = authMode === 'login';
+  const tabBtn = (m, label, id, icon) =>
+    `<button type="button" onclick="switchAuthMode('${m}')" id="${id}" class="flex-1 py-2 text-sm font-semibold rounded-lg transition flex items-center justify-center gap-1.5 ${isLogin === (m==='login') ? 'bg-brand text-white shadow-sm shadow-brand/30' : 'text-ink-soft dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'}">
+      <svg class="w-4 h-4"><use href="#${icon}"/></svg>${label}
+    </button>`;
   openModal(`
     <div class="p-6">
-      <div class="flex items-center justify-between mb-5">
+      <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-bold text-ink dark:text-white flex items-center gap-2">
-          <img src="060bfc2b3cd9eb7b1431c3f9c41ff42c.jpg" class="w-8 h-8 rounded-lg object-cover">登录 Model Relay
+          <img src="060bfc2b3cd9eb7b1431c3f9c41ff42c.jpg" class="w-8 h-8 rounded-lg object-cover">${isLogin ? '登录 Model Relay' : '注册 Model Relay'}
         </h3>
         <button onclick="closeModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-ink-faint hover:bg-gray-100 dark:hover:bg-gray-700">
           <svg class="w-5 h-5"><use href="#i-close"/></svg>
         </button>
       </div>
+      <div class="flex gap-2 p-1 rounded-xl bg-gray-100 dark:bg-gray-900 mb-5">
+        ${tabBtn('login','登录','tab-login','i-user')}
+        ${tabBtn('register','注册','tab-register','i-plus')}
+      </div>
       <div class="space-y-4">
+        ${isLogin ? '' : `
+        <div>
+          <label class="text-sm font-medium text-ink-soft dark:text-gray-400 mb-1.5 block">昵称（可选）</label>
+          <input id="re-dn" type="text" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-ink dark:text-white focus:ring-2 focus:ring-brand focus:border-transparent outline-none" placeholder="例如：小明">
+        </div>`}
         <div>
           <label class="text-sm font-medium text-ink-soft dark:text-gray-400 mb-1.5 block">用户名</label>
-          <input id="li-user" type="text" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-ink dark:text-white focus:ring-2 focus:ring-brand focus:border-transparent outline-none" placeholder="admin">
+          <input id="li-user" type="text" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-ink dark:text-white focus:ring-2 focus:ring-brand focus:border-transparent outline-none" placeholder="${isLogin ? 'admin' : '4-20 位字母/数字'}">
         </div>
         <div>
           <label class="text-sm font-medium text-ink-soft dark:text-gray-400 mb-1.5 block">密码</label>
           <input id="li-pass" type="password" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-ink dark:text-white focus:ring-2 focus:ring-brand focus:border-transparent outline-none" placeholder="至少 8 位">
         </div>
+        ${isLogin ? '' : `
+        <div>
+          <label class="text-sm font-medium text-ink-soft dark:text-gray-400 mb-1.5 block">确认密码</label>
+          <input id="re-pass2" type="password" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-ink dark:text-white focus:ring-2 focus:ring-brand focus:border-transparent outline-none" placeholder="再输一次密码">
+        </div>
+        <div>
+          <label class="text-sm font-medium text-ink-soft dark:text-gray-400 mb-1.5 block">邮箱（可选）</label>
+          <input id="re-email" type="email" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-ink dark:text-white focus:ring-2 focus:ring-brand focus:border-transparent outline-none" placeholder="you@example.com">
+        </div>`}
         <div id="li-captcha-wrap" class="hidden">
           <label class="text-sm font-medium text-ink-soft dark:text-gray-400 mb-1.5 block">验证码</label>
           <div class="flex gap-2 items-center">
@@ -316,13 +345,15 @@ function openLoginModal() {
             <input id="li-cap" type="text" class="flex-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-ink dark:text-white focus:ring-2 focus:ring-brand focus:border-transparent outline-none" placeholder="输入验证码">
           </div>
         </div>
-        <button id="li-btn" onclick="submitLogin()" class="w-full py-2.5 rounded-xl bg-brand text-white font-semibold hover:bg-brand-dark transition shadow-lg shadow-brand/30 flex items-center justify-center gap-2">
-          <svg class="w-4 h-4"><use href="#i-user"/></svg>登录
+        <button id="li-btn" onclick="${isLogin ? 'submitLogin()' : 'submitRegister()'}" class="w-full py-2.5 rounded-xl bg-brand text-white font-semibold hover:bg-brand-dark transition shadow-lg shadow-brand/30 flex items-center justify-center gap-2">
+          <svg class="w-4 h-4"><use href="#${isLogin ? 'i-user' : 'i-bolt'}"/></svg>${isLogin ? '登录' : '注册并登录'}
         </button>
+        ${isLogin ? `<p class="text-xs text-center text-ink-faint dark:text-gray-500">还没有账号？<a href="#" onclick="switchAuthMode('register');return false;" class="text-brand font-medium hover:underline">去注册一个</a></p>`
+                : `<p class="text-xs text-center text-ink-faint dark:text-gray-500">已有账号？<a href="#" onclick="switchAuthMode('login');return false;" class="text-brand font-medium hover:underline">去登录</a></p>`}
       </div>
     </div>`);
-  maybeLoadCaptcha();
 }
+function switchAuthMode(m) { authMode = m; renderAuthModal(); maybeLoadCaptcha(); }
 let captchaId = '';
 async function maybeLoadCaptcha() {
   try {
@@ -361,8 +392,43 @@ async function submitLogin() {
     toast(e.message || '登录失败', 'error');
     refreshCaptcha();
   } finally {
-    btn.disabled = false;
-    btn.innerHTML = '<svg class="w-4 h-4"><use href="#i-user"/></svg>登录';
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<svg class="w-4 h-4"><use href="#i-user"/></svg>登录';
+    }
+  }
+}
+async function submitRegister() {
+  const u = document.getElementById('li-user').value.trim();
+  const p = document.getElementById('li-pass').value;
+  const p2 = document.getElementById('re-pass2') ? document.getElementById('re-pass2').value : '';
+  const dn = document.getElementById('re-dn') ? document.getElementById('re-dn').value.trim() : '';
+  const email = document.getElementById('re-email') ? document.getElementById('re-email').value.trim() : '';
+  if (!u || !p) return toast('请输入用户名和密码', 'warn');
+  if (u.length < 2 || u.length > 32) return toast('用户名长度 2-32 位', 'warn');
+  if (p.length < 8) return toast('密码至少 8 位', 'warn');
+  if (p !== p2) return toast('两次输入的密码不一致', 'warn');
+  const body = { username: u, password: p };
+  if (dn) body.display_name = dn;
+  if (email) body.email = email;
+  const btn = document.getElementById('li-btn');
+  btn.disabled = true; btn.innerHTML = '<svg class="w-4 h-4 spin"><use href="#i-bolt"/></svg>注册中...';
+  try {
+    await API.post('/api/auth/register', body);
+    // 注册成功自动登录（captcha 注册时不传，登录时后端会查 disable_captcha）
+    await Auth.login(u, p, captchaId, document.getElementById('li-cap')?.value?.trim() || '');
+    toast(`注册成功，欢迎加入 ${Auth._user.display_name || Auth._user.username}`, 'ok');
+    closeModal();
+    renderNav();
+    router();
+  } catch (e) {
+    toast(e.message || '注册失败', 'error');
+    refreshCaptcha();
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<svg class="w-4 h-4"><use href="#i-bolt"/></svg>注册并登录';
+    }
   }
 }
 async function doLogout() {

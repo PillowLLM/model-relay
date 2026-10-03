@@ -1,4 +1,10 @@
-# 测试说明 (model-relay)
+# model-relay 测试说明
+- 测试完成：是（2026-10-04）
+- 测试日期：2026-10-04
+- 测试内容：集成测了 relay-store 真实 SQLite（用户 CRUD、事务兑换与重复兑换拒绝、默认分组保护、KV、分页）；单元测了 relay-core 工具函数（token/兑换码生成、sha256、mask_key、parse_group_ids）；注入测了 SQL 注入（参数化查询抵御 `' OR '1'='1` 与 `DROP TABLE` 堆叠语句）、relay-autofit 畸形载荷拒绝/XSS 不透明透传、损坏 model_mapping 回退；钩子测了 Provider 注册表已注册/未注册类型、usable_channels 状态/分组/模型过滤、ChannelSelector 加权轮询轮换。涉及 crate：relay-core / relay-autofit / relay-provider / relay-store。
+- 运行命令：`cargo test`（或 `cargo test -p relay-core -p relay-autofit -p relay-provider -p relay-store`）
+- 测试框架：Rust 内置 cargo test（源码内 #[cfg(test)] 单元 + tests/ 集成）
+- 模型：豆包（Doubao）生成
 
 本工作区测试分为两类：**单元测试**（crate 源码内 `#[cfg(test)]`，原有）与
 **集成测试**（各 crate `tests/` 目录，本次新增）。

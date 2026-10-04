@@ -38,3 +38,15 @@ model-relay/
 ├── docs/            # 文档
 └── scripts/         # 测试脚本
 ```
+
+---
+
+<div align="center">
+
+<a href="https://github.com/PillowLLM/model-relay">
+  <img width="100%" src="https://alittlecatgirlpanel.yxp.hk/card?repo=PillowLLM/model-relay" alt="gh-card · PillowLLM/model-relay" />
+</a>
+
+<sub>Powered by <a href="https://alittlecatgirlpanel.yxp.hk"><b>gh-card</b></a> · 粉色手写体 README 仓库名片</sub>
+
+</div>
